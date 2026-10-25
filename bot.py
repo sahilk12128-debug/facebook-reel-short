@@ -1,5 +1,5 @@
 # =====================================================================
-# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (यूट्यूब एरर फिक्स)
+# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (SSL एरर फिक्स)
 # =====================================================================
 
 import os
@@ -7,6 +7,10 @@ import requests
 import json
 import time
 import subprocess
+import urllib3
+
+# SSL चेतावनियों को बंद करना
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 print("⏳ सॉफ्टवेयर के जरूरी टूल्स लोड हो रहे हैं...")
 subprocess.run("pip install --upgrade requests yt-dlp google-api-python-client google-auth-oauthlib google-auth-httplib2", shell=True)
@@ -25,8 +29,7 @@ YT_CLIENT_ID = os.environ.get("YT_CLIENT_ID")
 YT_CLIENT_SECRET = os.environ.get("YT_CLIENT_SECRET")
 YT_REFRESH_TOKEN = os.environ.get("YT_REFRESH_TOKEN")
 
-# 🔗 यूट्यूब के कड़े नियमों से बचने के लिए हम बिल्कुल सेफ फनी क्लिप यूज़ कर रहे हैं
-# यहाँ आप किसी भी ओपन सोर्स फनी वीडियो का डायरेक्ट लिंक भी डाल सकते हैं
+# 🔗 बिल्कुल सेफ डायरेक्ट डाउनलोड लिंक
 VIDEO_URL = "https://r2.dev"
 
 FUNNY_TEXT_ON_VIDEO = "End tak dekho, hansi nahi rukegi!"
@@ -41,8 +44,8 @@ OUTPUT_REEL = "funny_facebook_reel.mp4"
 def prepare_video():
     print("🔍 सेफ सोर्स से फनी मूवी क्लिप डाउनलोड की जा रही है...")
     try:
-        # सीधे यूआरएल से डाउनलोड करना ताकि यूट्यूब ब्लॉक न करे
-        r = requests.get(VIDEO_URL, stream=True)
+        # 🔥 यहाँ verify=False लगा दिया है ताकि SSL कनेक्शन का एरर कभी न आए
+        r = requests.get(VIDEO_URL, stream=True, verify=False)
         with open(INPUT_VIDEO, 'wb') as f:
             for chunk in r.iter_content(chunk_size=1024*1024):
                 if chunk:
