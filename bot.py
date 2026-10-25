@@ -1,5 +1,5 @@
 # =====================================================================
-# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (फाइनल फिक्स)
+# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (फॉन्ट फिक्स)
 # =====================================================================
 
 import os
@@ -8,9 +8,11 @@ import json
 import time
 import subprocess
 
-print("⏳ सॉफ्टवेयर के जरूरी टूल्स लोड हो रहे हैं...")
+print("⏳ सॉफ्टवेयर के जरूरी टूल्स और फॉन्ट पैकेज लोड हो रहे हैं...")
+# 🔥 यहाँ हमने fonts-freefont-ttf भी इंस्टॉल करवा दिया है ताकि अक्षर लिखने में एरर न आए
+subprocess.run("sudo apt-get update && sudo apt-get install -y fonts-freefont-ttf", shell=True)
 subprocess.run("pip install --upgrade requests yt-dlp google-api-python-client google-auth-oauthlib google-auth-httplib2", shell=True)
-print("✅ टूल्स लोड हो गए हैं!\n")
+print("✅ सभी टूल्स और फोंट्स लोड हो गए हैं!\n")
 
 from yt_dlp import YoutubeDL
 from googleapiclient.discovery import build
@@ -25,7 +27,7 @@ YT_CLIENT_ID = os.environ.get("YT_CLIENT_ID")
 YT_CLIENT_SECRET = os.environ.get("YT_CLIENT_SECRET")
 YT_REFRESH_TOKEN = os.environ.get("YT_REFRESH_TOKEN")
 
-# 🔗 🔥 नया 100% सेफ डायरेक्ट पब्लिक लिंक (इस पर कभी भी SSL एरर नहीं आ सकता)
+# 🔗 100% सेफ डायरेक्ट पब्लिक लिंक
 VIDEO_URL = "https://w3schools.com"
 
 FUNNY_TEXT_ON_VIDEO = "End tak dekho, hansi nahi rukegi!"
@@ -38,9 +40,8 @@ OUTPUT_REEL = "funny_facebook_reel.mp4"
 # 🎥 कार्य 1 & 2: सेफ डाउनलोड और सुपरफास्ट FFmpeg एडिटिंग
 # ---------------------------------------------------------------------
 def prepare_video():
-    print("🔍 नए सेफ सोर्स से फनी मूवी क्लिप डाउनलोड की जा रही है...")
+    print("🔍 सेफ सोर्स से फनी मूवी क्लिप डाउनलोड की जा रही है...")
     try:
-        # यह सर्वर बिना किसी नखरे के तुरंत डाउनलोड होने देगा
         headers = {'User-Agent': 'Mozilla/5.0'}
         r = requests.get(VIDEO_URL, stream=True, headers=headers, verify=False)
         with open(INPUT_VIDEO, 'wb') as f:
@@ -50,9 +51,11 @@ def prepare_video():
         print("🎉 वीडियो सफलतापूर्वक डाउनलोड हो गया!\n")
         
         print("🎬 वीडियो एडिटिंग और फनी कंटेंट जोड़ने की प्रक्रिया शुरू...")
+        # 🛠️ यहाँ हमने बिल्कुल सही फॉन्ट पाथ सेट कर दिया है ताकि एरर आने का रास्ता ही बंद हो जाए
+        font_path = "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"
         ffmpeg_cmd = (
             f'ffmpeg -i {INPUT_VIDEO} -vf "crop=ih*9/16:ih:(iw-ow)/2:0,setpts=PTS/1.03,eq=contrast=1.06:saturation=1.1,'
-            f'drawtext=text=\'{FUNNY_TEXT_ON_VIDEO}\':x=(w-text_w)/2:y=80:fontsize=28:fontcolor=yellow:box=1:boxcolor=black@0.6:boxborderw=10" '
+            f'drawtext=fontfile={font_path}:text=\'{FUNNY_TEXT_ON_VIDEO}\':x=(w-text_w)/2:y=80:fontsize=28:fontcolor=yellow:box=1:boxcolor=black@0.6:boxborderw=10" '
             f'-af "atempo=1.03" -c:v libx264 -preset ultrafast -crf 26 -c:a aac -b:a 128k {OUTPUT_REEL} -y'
         )
         subprocess.run(ffmpeg_cmd, shell=True, check=True)
