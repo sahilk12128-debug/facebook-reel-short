@@ -1,5 +1,5 @@
 # =====================================================================
-# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (अंतिम फिक्स)
+# 🎬 100% डेली ऑटोमैटिक एंटी-कॉपीराइट डुअल सॉफ्टवेयर (सुपर सेफ मोड)
 # =====================================================================
 
 import os
@@ -31,16 +31,15 @@ VIDEO_URL = "https://w3schools.com"
 # 🤣 यह फनी लाइन सीधे फेसबुक और यूट्यूब के कैप्शन में चमकेगी
 VIDEO_CAPTION = "End tak dekho, hansi nahi rukegi! 🤣🔥 #shorts #funny #movies #viral #comedy"
 
-INPUT_VIDEO = "original_movie_clip.mp4"
+INPUT_VIDEO = "downloaded_clip.mp4"
 OUTPUT_REEL = "funny_facebook_reel.mp4"
 
 # ---------------------------------------------------------------------
-# 🎥 कार्य 1 & 2: सेफ डाउनलोड और सुपरफास्ट FFmpeg एडिटिंग
+# 🎥 कार्य 1 & 2: सेफ डाउनलोड और एंटी-कॉपीराइट कोडिंग बदलाव
 # ---------------------------------------------------------------------
 def prepare_video():
-    print("🔍 नए सेफ सोर्स से फनी मूवी क्लिप डाउनलोड की जा रही है...")
+    print("🔍 नए सेफ सोर्स से मूवी क्लिप डाउनलोड की जा रही है...")
     try:
-        # पुरानी लटकी हुई फाइलों को पूरी तरह डिलीट करना ताकि 183 एरर न आए
         if os.path.exists(INPUT_VIDEO): os.remove(INPUT_VIDEO)
         if os.path.exists(OUTPUT_REEL): os.remove(OUTPUT_REEL)
             
@@ -52,19 +51,19 @@ def prepare_video():
                     f.write(chunk)
         print("🎉 वीडियो सफलतापूर्वक डाउनलोड हो गया!\n")
         
-        print("🎬 वीडियो एडिटिंग और एंटी-कॉपीराइट प्रक्रिया शुरू...")
-        # 🛠️ यहाँ हमने pix_fmt=yuv420p जोड़ दिया है ताकि कोडिंग बिल्कुल सेफ हो जाए
-        # और साइज को इवन (Even Number) रखा है ताकि FFmpeg कभी एरर न दे
+        print("🎬 एंटी-कॉपीराइट कोडिंग बदलाव शुरू (नो-एरर लाइट मोड)...")
+        # 🛠️ यहाँ हमने वीडियो की कोडिंग को बिना भारी रेंडरिंग के बदला है:
+        # 1. '-af asetrate=44100*1.02,atempo=1/1.02' -> यह आवाज़ को हल्का सा बदलकर कॉपीराइट रोकता है।
+        # 2. '-bitexact' -> यह वीडियो का डिजिटल नाम (Metadata) पूरी तरह मिटा देता है जिससे फेसबुक का रोबोट धोखा खा जाता है।
         ffmpeg_cmd = (
-            f'ffmpeg -y -i {INPUT_VIDEO} -vf "crop=ih*9/16:ih,setpts=PTS/1.03,eq=contrast=1.06:saturation=1.1,scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" '
-            f'-af "atempo=1.03" -c:v libx264 -preset ultrafast -crf 28 -c:a aac -b:a 128k {OUTPUT_REEL}'
+            f'ffmpeg -y -i {INPUT_VIDEO} -af "asetrate=44100*1.02,atempo=1/1.02" '
+            f'-c:v libx264 -map_metadata -1 -bitexact -preset ultrafast -crf 30 -c:a aac {OUTPUT_REEL}'
         )
         
-        # एरर को लाइव देखने के लिए हम इस बार आउटपुट को छुपाएंगे नहीं
         subprocess.run(ffmpeg_cmd, shell=True, check=True)
         
         if os.path.exists(OUTPUT_REEL):
-            print("🎉 कॉपीराइट-फ्री शॉर्ट्स वीडियो पूरी तरह तैयार हो गया है!\n")
+            print("🎉 एंटी-कॉपीराइट शॉर्ट्स वीडियो सफलतापूर्वक तैयार हो गया है!\n")
             return True
         else:
             return False
@@ -96,7 +95,7 @@ def upload_to_facebook():
             'file_size': str(len(video_data))
         }
         requests.post(upload_url, headers=headers, data=video_data)
-        print("✅ वीडियो फाइल फेसबुक सर्वर पर ट्रांसफर हो गई!")
+        print("✅ video फाइल फेसबुक सर्वर पर ट्रांसफर हो गई!")
         
         print("🎬 रील लाइव की जा रही है...")
         publish_url = f"https://facebook.com{FACEBOOK_PAGE_ID}/video_reels"
@@ -136,7 +135,7 @@ def upload_to_youtube():
         
         body = {
             "snippet": {
-                "title": "Bollywood Comedy Scene #shorts",
+                "title": "Amazing Fun Scene #shorts",
                 "description": VIDEO_CAPTION,
                 "tags": ["shorts", "funny", "comedy", "movie"],
                 "categoryId": "23" 
