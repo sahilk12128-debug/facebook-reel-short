@@ -1,5 +1,5 @@
 # =====================================================================
-# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (100% वर्किंग मोड)
+# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स + यूट्यूब शॉर्ट्स डुअल सॉफ्टवेयर (अंतिम फिक्स)
 # =====================================================================
 
 import os
@@ -40,6 +40,10 @@ OUTPUT_REEL = "funny_facebook_reel.mp4"
 def prepare_video():
     print("🔍 नए सेफ सोर्स से फनी मूवी क्लिप डाउनलोड की जा रही है...")
     try:
+        # पुरानी लटकी हुई फाइलों को पूरी तरह डिलीट करना ताकि 183 एरर न आए
+        if os.path.exists(INPUT_VIDEO): os.remove(INPUT_VIDEO)
+        if os.path.exists(OUTPUT_REEL): os.remove(OUTPUT_REEL)
+            
         headers = {'User-Agent': 'Mozilla/5.0'}
         r = requests.get(VIDEO_URL, stream=True, headers=headers, verify=False)
         with open(INPUT_VIDEO, 'wb') as f:
@@ -49,15 +53,21 @@ def prepare_video():
         print("🎉 वीडियो सफलतापूर्वक डाउनलोड हो गया!\n")
         
         print("🎬 वीडियो एडिटिंग और एंटी-कॉपीराइट प्रक्रिया शुरू...")
-        # 🛠️ यहाँ एरर देने वाले drawtext (टेक्स्ट ओवरले) को हटा दिया गया है। 
-        # अब यह सिर्फ 9:16 क्रॉप करेगा, स्पीड बढ़ाएगा और कलर एडजस्ट करेगा ताकि कोई एरर न आए।
+        # 🛠️ यहाँ हमने pix_fmt=yuv420p जोड़ दिया है ताकि कोडिंग बिल्कुल सेफ हो जाए
+        # और साइज को इवन (Even Number) रखा है ताकि FFmpeg कभी एरर न दे
         ffmpeg_cmd = (
-            f'ffmpeg -i {INPUT_VIDEO} -vf "crop=ih*9/16:ih:(iw-ow)/2:0,setpts=PTS/1.03,eq=contrast=1.06:saturation=1.1" '
-            f'-af "atempo=1.03" -c:v libx264 -preset ultrafast -crf 26 -c:a aac -b:a 128k {OUTPUT_REEL} -y'
+            f'ffmpeg -y -i {INPUT_VIDEO} -vf "crop=ih*9/16:ih,setpts=PTS/1.03,eq=contrast=1.06:saturation=1.1,scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" '
+            f'-af "atempo=1.03" -c:v libx264 -preset ultrafast -crf 28 -c:a aac -b:a 128k {OUTPUT_REEL}'
         )
+        
+        # एरर को लाइव देखने के लिए हम इस बार आउटपुट को छुपाएंगे नहीं
         subprocess.run(ffmpeg_cmd, shell=True, check=True)
-        print("🎉 कॉपीराइट-फ्री शॉर्ट्स वीडियो पूरी तरह तैयार हो गया है!\n")
-        return True
+        
+        if os.path.exists(OUTPUT_REEL):
+            print("🎉 कॉपीराइट-फ्री शॉर्ट्स वीडियो पूरी तरह तैयार हो गया है!\n")
+            return True
+        else:
+            return False
     except Exception as e:
         print(f"❌ वीडियो बनाने में खराबी आई: {e}")
         return False
