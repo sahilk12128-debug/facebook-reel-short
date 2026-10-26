@@ -1,18 +1,13 @@
 import os
 import requests
-import time
 
-# Configurations from environment variables
-FACEBOOK_PAGE_ID = os.getenv("FACEBOOK_PAGE_ID")
-FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
-VIDEO_PATH = "reel.mp4"  # Path to your video file
+# आपकी Facebook Page ID और Access Token यहाँ सेट हैं
+FACEBOOK_PAGE_ID = "1322066784333919"
+FACEBOOK_ACCESS_TOKEN = "EAAQcE9ZBE5XcBS0eXCOzM59mbl7hh6EuEnTYvb9dmscZCuVPwTNPcZA48htXvkYAa1zmdthG8prPf9PMTsl09CrZCBHX4T5jHVdqJAqdGE13yTnoO0L4Mur1MiDiP0ADVksyqzF5dlhmtlsYgNIJj10WaFAkVtcobHwcYpygCyGPT6vDAZCWYs00Wb6ZAuRjfhZAxPVg4S5ZAqL9hZBFYH33NkQaxwZCO3oOZAt"
+VIDEO_PATH = "reel.mp4"
 
 def upload_to_facebook():
     print("Starting Facebook Reel Upload process...")
-    
-    if not FACEBOOK_PAGE_ID or not FACEBOOK_ACCESS_TOKEN:
-        print("❌ Error: FACEBOOK_PAGE_ID or FACEBOOK_ACCESS_TOKEN is missing in environment variables.")
-        return
 
     if not os.path.exists(VIDEO_PATH):
         print(f"❌ Error: Video file '{VIDEO_PATH}' not found!")
@@ -53,7 +48,6 @@ def upload_to_facebook():
         
         upload_response = requests.post(upload_url, headers=headers, data=video_bytes).json()
         print(f"Upload Binary Response: {upload_response}")
-        
         print("✅ Video binary uploaded successfully.")
 
         # Step 3: Finish/Publish the Reel
@@ -62,7 +56,7 @@ def upload_to_facebook():
         publish_payload = {
             'upload_phase': 'finish',
             'video_state': 'PUBLISHED',
-            'description': 'Automated Daily Movie Short Reel #shorts',
+            'description': 'Automated Movie Short Reel #shorts',
             'video_id': video_id,
             'access_token': FACEBOOK_ACCESS_TOKEN
         }
