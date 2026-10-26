@@ -15,7 +15,7 @@ print("✅ सभी जरूरी टूल्स लोड हो गए ह
 FACEBOOK_PAGE_ID = os.environ.get("FB_PAGE_ID")
 FACEBOOK_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
-# 🔗 वीडियो लिंक और नाम
+# 🔗 वीडियो लिंक और कैप्शन
 VIDEO_URL = "https://w3schools.com"
 VIDEO_CAPTION = "End tak dekho, hansi nahi rukegi! 🤣🔥 #shorts #funny #viral"
 INPUT_VIDEO = "downloaded_clip.mp4"
