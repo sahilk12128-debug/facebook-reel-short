@@ -10,31 +10,26 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 
 def download_and_process_video():
-    print("Step 1: Searching and downloading a viral/short video...")
+    print("Step 1: Downloading video via direct source...")
     
-    # आप यहाँ अपनी पसंद का कोई भी शॉर्ट वीडियो का सर्च टर्म या डायरेक्ट लिंक दे सकते हैं
-    search_query = "ytsearch1:movie short viral reels shorts"
-    
-    ydl_opts = {
-        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-        'outtmpl': RAW_VIDEO,
-        'noplaylist': True,
-        'max_downloads': 1,
-    }
+    # यहाँ हम YouTube की बजाय एक डायरेक्ट पब्लिक शॉर्ट वीडियो का लिंक इस्तेमाल कर रहे हैं ताकि ब्लॉक न हो
+    video_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([search_query])
-        print("✅ Video downloaded successfully.")
+        # सीधे वीडियो डाउनलोड करना
+        response = requests.get(video_url, stream=True)
+        with open(RAW_VIDEO, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+        print("✅ Raw video downloaded successfully.")
         
-        # Step 2: Anti-Copyright Processing (FFmpeg के ज़रिए वीडियो को थोड़ा मॉडिफाई करना)
-        print("Step 2: Processing video to prevent copyright issues (Editing metadata, slight speed/filter adjustment)...")
-        # यह कमांड वीडियो का थोड़ा सा फ़्रेम और ऑडियो बदलकर उसे यूनिक बना देती है ताकि कॉपीराइट क्लेम न आए
+        # Step 2: Anti-Copyright Processing (FFmpeg के ज़रिए वीडियो को प्रोसेस करना)
+        print("Step 2: Processing video using FFmpeg...")
         ffmpeg_command = [
             'ffmpeg', '-y', '-i', RAW_VIDEO,
-            '-vf', "eq=brightness=0.03:saturation=1.1", # हल्का सा रंग और ब्राइटनेस बदलना
-            '-af', 'asetrate=44100*1.02', # ऑडियो की पिच हल्की सी बदलना ताकि ऑटोमैटिक कॉपीराइट मैच न हो
-            '-t', '55', # रील्स के लिए वीडियो को 55 सेकंड के अंदर रखना
+            '-vf', "eq=brightness=0.03:saturation=1.1",
+            '-t', '30',
             VIDEO_PATH
         ]
         
