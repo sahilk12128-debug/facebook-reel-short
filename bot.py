@@ -1,126 +1,82 @@
-# =====================================================================
-# 🎬 100% डेली ऑटोमैटिक फेसबुक रील्स अपलोड बॉट
-# =====================================================================
 import os
 import requests
-import json
 import time
-import subprocess
 
-print("⏳ सॉफ्टवेयर के जरूरी टूल्स लोड हो रहे हैं...")
-subprocess.run("pip install --upgrade requests yt-dlp", shell=True)
-print("✅ सभी जरूरी टूल्स लोड हो गए हैं!\n")
+# Configurations from environment variables
+FACEBOOK_PAGE_ID = os.getenv("FACEBOOK_PAGE_ID")
+FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+VIDEO_PATH = "reel.mp4"  # Path to your video file
 
-# ⚙️ गिटहब के सुरक्षित लॉकर से फेसबुक की चाबियां उठाना
-FACEBOOK_PAGE_ID = os.environ.get("FB_PAGE_ID")
-FACEBOOK_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
+def upload_to_facebook():
+    print("Starting Facebook Reel Upload process...")
+    
+    if not FACEBOOK_PAGE_ID or not FACEBOOK_ACCESS_TOKEN:
+        print("❌ Error: FACEBOOK_PAGE_ID or FACEBOOK_ACCESS_TOKEN is missing in environment variables.")
+        return
 
-# 🔗 वीडियो लिंक और कैप्शन
-VIDEO_URL = "https://w3schools.com"
-VIDEO_CAPTION = "End tak dekho, hansi nahi rukegi! 🤣🔥 #shorts #funny #viral"
-INPUT_VIDEO = "downloaded_clip.mp4"
-OUTPUT_REEL = "funny_facebook_reel.mp4"
+    if not os.path.exists(VIDEO_PATH):
+        print(f"❌ Error: Video file '{VIDEO_PATH}' not found!")
+        return
 
-# ---------------------------------------------------------------------
-# 🎥 कार्य 1: डाउनलोड और डिजिटल एंटी-कॉपीराइट बदलाव
-# ---------------------------------------------------------------------
-def prepare_video():
-    print("🔍 वीडियो डाउनलोड की जा रही है...")
     try:
-        if os.path.exists(INPUT_VIDEO):
-            os.remove(INPUT_VIDEO)
-        if os.path.exists(OUTPUT_REEL):
-            os.remove(OUTPUT_REEL)
-            
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        r = requests.get(VIDEO_URL, stream=True, headers=headers, verify=False)
-        
-        with open(INPUT_VIDEO, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024*1024):
-                if chunk:
-                    f.write(chunk)
-                    
-        print("🎉 वीडियो सफलतापूर्वक डाउनलोड हो गया!\n")
-        print("🎬 एंटी-कॉपीराइट कोडिंग बदलाव शुरू...")
-        
-        with open(INPUT_VIDEO, 'rb') as f_in:
-            video_data = f_in.read()
-            
-        # 🔥 एंटी-कॉपीराइट बाइट्स जोड़ना
-        extra_bytes = b"\x00\x01\x02\x03\x04" 
-        
-        with open(OUTPUT_REEL, 'wb') as f_out:
-            f_out.write(video_data + extra_bytes)
-            
-        print("🎉 एंटी-कॉपीराइट वीडियो पूरी तरह तैयार है!\n")
+        # Step 1: Initialize the Reel Upload Session
+        print("Step 1: Initializing video upload session with Facebook...")
         url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         payload = {
             'upload_phase': 'initialize',
             'access_token': FACEBOOK_ACCESS_TOKEN
         }
+        
         response_raw = requests.post(url, data=payload)
-        print(f"फेसबुक का असली जवाब: {response_raw.text}")
+        print(f"Facebook Raw Response: {response_raw.text}")
         
         response = response_raw.json()
         
-        if 'video_id' not in response:
-            print(f"❌ फेसबुक एरर डिटेल: {response}")
+        if 'video_id' not in response or 'upload_url' not in response:
+            print(f"❌ Facebook Initialization Failed: {response}")
             return
             
         video_id = response['video_id']
-        upload_url = response['upload_url']ा
-# ---------------------------------------------------------------------
-def upload_to_facebook():
-    if not FACEBOOK_PAGE_ID or not FACEBOOK_ACCESS_TOKEN:
-        print("⚠️ फेसबुक की चाबियां गायब हैं!")
-        return
-
-    print("🚀 फेसबुक पेज पर रील अपलोड की जा रही है...")
-    try:
-        url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
-        payload = {
-            'upload_phase': 'initialize',
-            'access_token': FACEBOOK_ACCESS_TOKEN
-        }
-        response = requests.post(url, data=payload).json()
-        
-        video_id = response['video_id']
         upload_url = response['upload_url']
+        print(f"✅ Initialization successful! Video ID: {video_id}")
 
-        with open(OUTPUT_REEL, 'rb') as f:
-            video_data = f.read()
-
+        # Step 2: Upload the Video Binary
+        print("Step 2: Uploading video binary data...")
+        with open(VIDEO_PATH, 'rb') as video_file:
+            video_bytes = video_file.read()
+            
         headers = {
             'Authorization': f'OAuth {FACEBOOK_ACCESS_TOKEN}',
             'offset': '0',
-            'file_size': str(len(video_data))
+            'file_size': str(len(video_bytes))
         }
-        requests.post(upload_url, headers=headers, data=video_data)
-        print("✅ वीडियो फाइल फेसबुक सर्वर पर ट्रांसफर हो गई!")
+        
+        upload_response = requests.post(upload_url, headers=headers, data=video_bytes).json()
+        print(f"Upload Binary Response: {upload_response}")
+        
+        print("✅ Video binary uploaded successfully.")
 
-        print("🎬 रील लाइव की जा रही है...")
+        # Step 3: Finish/Publish the Reel
+        print("Step 3: Publishing the Reel...")
         publish_url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         publish_payload = {
             'upload_phase': 'finish',
-            'video_id': video_id,
             'video_state': 'PUBLISHED',
-            'description': VIDEO_CAPTION,
+            'description': 'Automated Daily Movie Short Reel #shorts',
+            'video_id': video_id,
             'access_token': FACEBOOK_ACCESS_TOKEN
         }
         
-        time.sleep(5)
-        publish_res = requests.post(publish_url, data=publish_payload).json()
-
-        if publish_res.get('success') or 'fb_id' in publish_res:
-            print("\n🔥 धमाका! फेसबुक पेज पर रील 100% लाइव हो चुकी है! 🔥")
+        publish_response = requests.post(publish_url, data=publish_payload).json()
+        print(f"Publish Response: {publish_response}")
+        
+        if publish_response.get('success'):
+            print("🎉 Success! Facebook Reel published successfully.")
         else:
-            print(f"❌ फेसबुक पब्लिश एरर: {publish_res}")
+            print(f"⚠️ Warning/Error during publish: {publish_response}")
 
     except Exception as e:
-        print(f"❌ फेसबुक अपलोडिंग में तकनीकी खराबी: {e}")
+        print(f"❌ An exception occurred during upload: {str(e)}")
 
 if __name__ == "__main__":
-    print("🏁 --- फेसबुक ऑटोमेशन बॉट चालू हो रहा है --- 🏁\n")
-    if prepare_video():
-        upload_to_facebook()
-    print("\n🏁 --- प्रक्रिया पूरी तरह समाप्त --- 🏁")
+    upload_to_facebook()
