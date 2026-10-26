@@ -61,7 +61,7 @@ def prepare_video():
             video_data = f_in.read()
             
         # कुछ फनी रैंडम बाइट्स जोड़ना
-        extra_bytes = bytes([random.randint(0, 255) for _ in range(100)])
+       url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         
         with open(OUTPUT_REEL, 'wb') as f_out:
             f_out.write(video_data + extra_bytes)
@@ -72,7 +72,7 @@ def prepare_video():
         print(f"❌ वीडियो बनाने में खराबी आई: {e}")
         return False
 
-# ---------------------------------------------------------------------
+publish_url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
 # 👥 कार्य 2: फेसबुक पेज पर अपलोड करना
 # ---------------------------------------------------------------------
 def upload_to_facebook():
@@ -81,7 +81,7 @@ def upload_to_facebook():
         return
     print("🚀 फेसबुक पेज पर रील अपलोड की जा रही है...")
     try:
-        url = f"https://facebook.com{FACEBOOK_PAGE_ID}/video_reels"
+       url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         payload = {'upload_phase': 'initialize', 'access_token': FACEBOOK_ACCESS_TOKEN}
         response = requests.post(url, data=payload).json()
         video_id = response['video_id']
