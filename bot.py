@@ -60,11 +60,11 @@ def prepare_video():
         with open(INPUT_VIDEO, 'rb') as f_in:
             video_data = f_in.read()
             
-        # कुछ फनी रैंडम बाइट्स जोड़ना
-       url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
-        
-        with open(OUTPUT_REEL, 'wb') as f_out:
-            f_out.write(video_data + extra_bytes)
+   # 🔥 एंटी-कॉपीराइट बाइट्स डिफाइन करके जोड़ना
+    extra_bytes = b"\x00\x01\x02\x03\x04"
+
+    with open(OUTPUT_REEL, 'wb') as f_out:
+        f_out.write(video_data + extra_bytes)
             
         print("🎉 एंटी-कॉपीराइट शॉर्ट्स वीडियो बिना किसी एरर के पूरी तरह तैयार है!\n")
         return True
