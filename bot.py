@@ -1,7 +1,6 @@
 import os
 import subprocess
 import requests
-import yt_dlp
 
 # आपकी Facebook Page ID और Access Token यहाँ सेट हैं
 FACEBOOK_PAGE_ID = "1322066784333919"
@@ -11,12 +10,9 @@ RAW_VIDEO = "raw.mp4"
 
 def download_and_process_video():
     print("Step 1: Downloading video via direct source...")
-    
-    # यहाँ हम YouTube की बजाय एक डायरेक्ट पब्लिक शॉर्ट वीडियो का लिंक इस्तेमाल कर रहे हैं ताकि ब्लॉक न हो
     video_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     
     try:
-        # सीधे वीडियो डाउनलोड करना
         response = requests.get(video_url, stream=True)
         with open(RAW_VIDEO, 'wb') as f:
             for chunk in response.iter_content(chunk_size=1024):
@@ -24,7 +20,6 @@ def download_and_process_video():
                     f.write(chunk)
         print("✅ Raw video downloaded successfully.")
         
-        # Step 2: Anti-Copyright Processing (FFmpeg के ज़रिए वीडियो को प्रोसेस करना)
         print("Step 2: Processing video using FFmpeg...")
         ffmpeg_command = [
             'ffmpeg', '-y', '-i', RAW_VIDEO,
@@ -48,11 +43,11 @@ def upload_to_facebook():
         return
 
     try:
-        # Step 4: Initialize the Reel Upload Session with Facebook
-        print("Step 4: Initializing video upload session with Facebook...")
+        # Step 4: Start the Reel Upload Session using 'START' phase
+        print("Step 4: Starting video upload session with Facebook...")
         url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         payload = {
-            'upload_phase': 'initialize',
+            'upload_phase': 'START',
             'access_token': FACEBOOK_ACCESS_TOKEN
         }
         
@@ -62,12 +57,12 @@ def upload_to_facebook():
         response = response_raw.json()
         
         if 'video_id' not in response or 'upload_url' not in response:
-            print(f"❌ Facebook Initialization Failed: {response}")
+            print(f"❌ Facebook Start Failed: {response}")
             return
             
         video_id = response['video_id']
         upload_url = response['upload_url']
-        print(f"✅ Initialization successful! Video ID: {video_id}")
+        print(f"✅ Start successful! Video ID: {video_id}")
 
         # Step 5: Upload the Video Binary
         print("Step 5: Uploading video binary data to Facebook...")
@@ -84,11 +79,11 @@ def upload_to_facebook():
         print(f"Upload Binary Response: {upload_response}")
         print("✅ Video binary uploaded successfully.")
 
-        # Step 6: Finish/Publish the Reel
+        # Step 6: Finish/Publish the Reel using 'FINISH' phase
         print("Step 6: Publishing the Reel on Facebook...")
         publish_url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         publish_payload = {
-            'upload_phase': 'finish',
+            'upload_phase': 'FINISH',
             'video_state': 'PUBLISHED',
             'description': 'Automated Daily Movie Short Reel #shorts #viral',
             'video_id': video_id,
