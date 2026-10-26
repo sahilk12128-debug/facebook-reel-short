@@ -53,14 +53,22 @@ def prepare_video():
             f_out.write(video_data + extra_bytes)
             
         print("🎉 एंटी-कॉपीराइट वीडियो पूरी तरह तैयार है!\n")
-        return True
+        url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
+        payload = {
+            'upload_phase': 'initialize',
+            'access_token': FACEBOOK_ACCESS_TOKEN
+        }
+        response_raw = requests.post(url, data=payload)
+        print(f"फेसबुक का असली जवाब: {response_raw.text}")
         
-    except Exception as e:
-        print(f"❌ वीडियो बनाने में खराबी आई: {e}")
-        return False
-
-# ---------------------------------------------------------------------
-# 👥 कार्य 2: फेसबुक पेज पर अपलोड करना
+        response = response_raw.json()
+        
+        if 'video_id' not in response:
+            print(f"❌ फेसबुक एरर डिटेल: {response}")
+            return
+            
+        video_id = response['video_id']
+        upload_url = response['upload_url']ा
 # ---------------------------------------------------------------------
 def upload_to_facebook():
     if not FACEBOOK_PAGE_ID or not FACEBOOK_ACCESS_TOKEN:
