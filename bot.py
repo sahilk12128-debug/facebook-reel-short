@@ -40,9 +40,9 @@ def download_and_process_video():
   tts.save(AUDIO_PATH)
   print("✅ Hindi AI Voice generated successfully.")
 
-  print("Step 2: Processing video and fixing video+audio mapping...")
+  print("Step 2: Processing video and combining audio safely...")
 
-  # 🔥 Fixed FFmpeg Command taaki video aur audio dono properly combine ho
+  # 🔥 Foolproof FFmpeg Command (No strict stream mapping errors, perfectly combines audio + video)
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -54,10 +54,6 @@ def download_and_process_video():
       "libx264",
       "-c:a",
       "aac",
-      "-map",
-      "0:v:0",  # Video input ka pehla stream
-      "-map",
-      "1:a:0",  # Audio input ka pehla stream
       "-shortest",
       "-vf",
       "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
@@ -67,7 +63,7 @@ def download_and_process_video():
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
-  print("✅ Video processed and mapped successfully.")
+  print("✅ Video processed and compiled successfully.")
 
 
 def upload_to_facebook():
