@@ -39,7 +39,7 @@ def upload_to_facebook():
     print("Step 3: Starting Facebook Reel Upload process...")
 
     if not FB_ACCESS_TOKEN:
-        print("❌ Error: FACEBOOK_ACCESS_TOKEN is missing in GitHub Secrets!")
+        print("❌ Error: FB_ACCESS_TOKEN is missing in GitHub Secrets!")
         return
 
     if not os.path.exists(VIDEO_PATH):
