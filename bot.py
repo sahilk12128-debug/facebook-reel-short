@@ -12,11 +12,10 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Downloading direct trending short video...")
+  print("Step 1: Downloading direct verified video file...")
 
-  # 🔥 Yahan aap koi bhi alag aur achhi direct MP4 video ka link daal sakte hain
-  # (Taki har baar alag video aaye aur sample video ki zaroorat na pade)
-  video_url = "https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-sky-in-a-sunset-26070-large.mp4"
+  # 🔥 Ekdum reliable aur clean direct MP4 link jo FFmpeg bina error ke read kar sake
+  video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
 
   try:
     response = requests.get(video_url, stream=True)
@@ -24,12 +23,12 @@ def download_and_process_video():
       for chunk in response.iter_content(chunk_size=1024):
         if chunk:
           f.write(chunk)
-    print("✅ Trending video downloaded successfully.")
+    print("✅ Video downloaded successfully.")
   except Exception as e:
     print(f"❌ Error downloading video: {str(e)}")
     raise e
 
-  # 🔥 Step 1.5: Hindi AI Voice generate karne ka code
+  # Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
   text_to_hindi = (
       "Duniya ke sabse gazab aur rochak tathya! Ishe sunkar aap bhi hairan"
@@ -42,7 +41,7 @@ def download_and_process_video():
 
   print("Step 2: Processing video and syncing Hindi AI Voice...")
 
-  # 🔥 FFmpeg Command jo audio aur video ko perfect sync aur speed mein rakhegi
+  # 🔥 Error-Free FFmpeg Command
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -58,7 +57,7 @@ def download_and_process_video():
       "0:v:0",
       "-map",
       "1:a:0",
-      "-shortest",  # Audio aur video ki length barabar rakhega
+      "-shortest",
       "-vf",
       "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
       "eq=brightness=0.03:saturation=1.1",
