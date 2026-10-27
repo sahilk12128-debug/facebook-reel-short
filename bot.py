@@ -52,7 +52,7 @@ def upload_to_facebook():
         url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
         payload = {
             'upload_phase': 'START',
-            'access_token': FACEBOOK_ACCESS_TOKEN
+            'access_token': FB_ACCESS_TOKEN
         }
         
         response_raw = requests.post(url, data=payload)
@@ -74,7 +74,7 @@ def upload_to_facebook():
             video_bytes = video_file.read()
             
         headers = {
-            'Authorization': f'OAuth {FACEBOOK_ACCESS_TOKEN}',
+            'Authorization': f'OAuth {FB_ACCESS_TOKEN}',
             'offset': '0',
             'file_size': str(len(video_bytes))
         }
