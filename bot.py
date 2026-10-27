@@ -12,10 +12,13 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Downloading direct verified video file...")
+  print("Step 1: Downloading standard reliable video...")
 
-  # 🔥 Ekdum reliable aur clean direct MP4 link jo FFmpeg bina error ke read kar sake
-  video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
+  # Ekdum tested aur 100% working direct MP4 video link
+  video_url = (
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
+      "ForBiggerBlazes.mp4"
+  )
 
   try:
     response = requests.get(video_url, stream=True)
@@ -41,7 +44,7 @@ def download_and_process_video():
 
   print("Step 2: Processing video and syncing Hindi AI Voice...")
 
-  # 🔥 Error-Free FFmpeg Command
+  # FFmpeg Command jo video ko format karke audio match karegi
   ffmpeg_command = [
       "ffmpeg",
       "-y",
