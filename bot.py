@@ -1,22 +1,22 @@
 import os
 import random
 import subprocess
+import pyttsx3
 import requests
-from gtts import gTTS
 
 # आपकी Facebook Page ID और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
-AUDIO_PATH = "voiceover.mp3"
+AUDIO_PATH = "voiceover.wav"  # pyttsx3 wav format save karta hai
 
-# 🔥 15+ Bilkul Alag, Viral aur Mind-Blowing Facts (Jo screen par bhi likhenge aur bolenge bhi)
+# 🔥 Viral Facts List (Jo video par bhi likhenge aur male voice me bolenge bhi)
 VIRAL_FACTS = [
     {
         "text": (
-            "Kya aap jaante hain? Octopuses ke paas teen dil aur paun"
-            " tentacle hote hain!"
+            "Kya aap jaante hain? Octopuses ke paas teen dil aur chaar tentacle"
+            " hote hain!"
         ),
         "tag": "#amazingfacts #science #viralshorts",
     },
@@ -57,7 +57,7 @@ VIRAL_FACTS = [
     },
     {
         "text": (
-            "Insaan ki haddiyan concrete (cement) se bhi zyada mazboot hoti"
+            "Insaan ki haddiyan concrete yaani cement se bhi zyada mazboot hoti"
             " hain!"
         ),
         "tag": "#amazing #healthfacts #knowledge",
@@ -69,20 +69,6 @@ VIRAL_FACTS = [
         ),
         "tag": "#banana #naturefacts #shorts",
     },
-    {
-        "text": (
-            "Puri duniya mein sabse zyada use kiye jaane wala password '123456'"
-            " hai!"
-        ),
-        "tag": "#techfacts #cybersecurity #facts",
-    },
-    {
-        "text": (
-            "Kacche aam mein jitna Vitamin C hota hai, utna kisi aur aam mein"
-            " nahi hota!"
-        ),
-        "tag": "#health #fruitfacts #hindi",
-    },
 ]
 
 
@@ -92,12 +78,7 @@ def download_and_process_video():
   fact_text = selected_item["text"]
   hashtag_tag = selected_item["tag"]
 
-  # FFmpeg ke drawtext ke liye text ko lines mein break karna taaki screen par fit aaye
-  # Hum simple formatting ke sath background generate karenge
   print("Step 1.1: Generating video with text overlay...")
-
-  # Background color gradient aur text ko ek sath render karne ki command
-  # Note: FFmpeg text ko safely dikhane ke liye single quotes handle kiye gaye hain
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -125,11 +106,23 @@ def download_and_process_video():
   subprocess.run(bg_cmd, check=True)
   print("✅ Video background with text generated successfully.")
 
-  # Step 1.5: Voice generate karna
-  print(f"Step 1.5: Generating Voiceover for: {fact_text}")
-  tts = gTTS(text=fact_text, lang="hi", slow=False)
-  tts.save(AUDIO_PATH)
-  print("✅ Voice generated successfully.")
+  # 🔥 Step 1.5: pyttsx3 ke zariye Male Voice generate karna
+  print(f"Step 1.5: Generating Male Voiceover for: {fact_text}")
+  engine = pyttsx3.init()
+
+  # Male voice select karne ka code
+  voices = engine.getProperty("voices")
+  for voice in voices:
+    # Linux/GitHub servers par male voice ko dhoondne ke liye
+    if "male" in voice.name.lower() or "hindi" in voice.name.lower():
+      engine.setProperty("voice", voice.id)
+      break
+
+  # Agar specific male voice na mile toh default voice ki speed thodi slow (heavy tone ke liye) kar denge
+  engine.setProperty("rate", 155)
+  engine.save_to_file(fact_text, AUDIO_PATH)
+  engine.runAndWait()
+  print("✅ Male Voice generated successfully.")
 
   print("Step 2: Mixing audio and compiling final video...")
   ffmpeg_command = [
