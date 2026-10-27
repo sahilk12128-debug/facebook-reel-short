@@ -8,6 +8,7 @@ FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
+CLEAN_VIDEO = "clean.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
 
@@ -30,6 +31,22 @@ def download_and_process_video():
     print(f"❌ Error downloading video: {str(e)}")
     raise e
 
+  # Step 1.1: Pehle raw video ko clean MP4 mein normalize karo taaki koi stream error na aaye
+  print("Step 1.1: Normalizing raw video format...")
+  normalize_cmd = [
+      "ffmpeg",
+      "-y",
+      "-i",
+      RAW_VIDEO,
+      "-c:v",
+      "libx264",
+      "-c:a",
+      "aac",
+      CLEAN_VIDEO,
+  ]
+  subprocess.run(normalize_cmd, check=True)
+
+  # Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
   text_to_hindi = (
       "Duniya ke sabse gazab aur rochak tathya! Ishe sunkar aap bhi hairan"
@@ -40,35 +57,34 @@ def download_and_process_video():
   tts.save(AUDIO_PATH)
   print("✅ Hindi AI Voice generated successfully.")
 
-  print(
-      "Step 2: Processing video with explicit video and audio stream mapping..."
-  )
+  print("Step 2: Processing video and combining Hindi AI Voice...")
 
-  # 🔥 Fix: Forcefully mapping video from input 0 and audio from input 1
+  # Step 2: Clean video aur Hindi voice ko 9:16 format mein mix karo
   ffmpeg_command = [
       "ffmpeg",
       "-y",
       "-i",
-      RAW_VIDEO,
+      CLEAN_VIDEO,
       "-i",
       AUDIO_PATH,
-      "-filter_complex",
-      "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=brightness=0.03:saturation=1.1[v]",
-      "-map",
-      "[v]",
-      "-map",
-      "1:a",
       "-c:v",
       "libx264",
       "-c:a",
       "aac",
+      "-map",
+      "0:v:0",
+      "-map",
+      "1:a:0",
       "-shortest",
+      "-vf",
+      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+      "eq=brightness=0.03:saturation=1.1",
       "-t",
       "30",
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
-  print("✅ Video processed and compiled successfully with visual stream.")
+  print("✅ Video processed and compiled successfully.")
 
 
 def upload_to_facebook():
