@@ -1,17 +1,17 @@
 import os
 import random
 import subprocess
-import pyttsx3
 import requests
+from gtts import gTTS
 
 # आपकी Facebook Page ID और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
-AUDIO_PATH = "voiceover.wav"  # pyttsx3 wav format save karta hai
+AUDIO_PATH = "voiceover.mp3"
 
-# 🔥 Viral Facts List (Jo video par bhi likhenge aur male voice me bolenge bhi)
+# 🔥 Bilkul Naye aur Viral Facts ki List (Har baar alag fact aayega)
 VIRAL_FACTS = [
     {
         "text": (
@@ -57,15 +57,14 @@ VIRAL_FACTS = [
     },
     {
         "text": (
-            "Insaan ki haddiyan concrete yaani cement se bhi zyada mazboot hoti"
-            " hain!"
+            "Insaan ki haddiyan cement se bhi zyada mazboot hoti hain!"
         ),
         "tag": "#amazing #healthfacts #knowledge",
     },
     {
         "text": (
-            "Banaana yaani Kela jhuka hua isliye hota hai kyunki yeh sooraj ki"
-            " taraf badhne ki koshish karta hai!"
+            "Kela jhuka hua isliye hota hai kyunki yeh sooraj ki taraf badhne ki"
+            " koshish karta hai!"
         ),
         "tag": "#banana #naturefacts #shorts",
     },
@@ -78,7 +77,7 @@ def download_and_process_video():
   fact_text = selected_item["text"]
   hashtag_tag = selected_item["tag"]
 
-  print("Step 1.1: Generating video with text overlay...")
+  print("Step 1.1: Generating video background with text overlay...")
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -86,6 +85,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
+  # FFmpeg ke zariye background aur screen par text likhne ka code
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -106,23 +106,11 @@ def download_and_process_video():
   subprocess.run(bg_cmd, check=True)
   print("✅ Video background with text generated successfully.")
 
-  # 🔥 Step 1.5: pyttsx3 ke zariye Male Voice generate karna
-  print(f"Step 1.5: Generating Male Voiceover for: {fact_text}")
-  engine = pyttsx3.init()
-
-  # Male voice select karne ka code
-  voices = engine.getProperty("voices")
-  for voice in voices:
-    # Linux/GitHub servers par male voice ko dhoondne ke liye
-    if "male" in voice.name.lower() or "hindi" in voice.name.lower():
-      engine.setProperty("voice", voice.id)
-      break
-
-  # Agar specific male voice na mile toh default voice ki speed thodi slow (heavy tone ke liye) kar denge
-  engine.setProperty("rate", 155)
-  engine.save_to_file(fact_text, AUDIO_PATH)
-  engine.runAndWait()
-  print("✅ Male Voice generated successfully.")
+  # Step 1.5: gTTS se clear voice generate karna
+  print(f"Step 1.5: Generating Voiceover for: {fact_text}")
+  tts = gTTS(text=fact_text, lang="hi", slow=False)
+  tts.save(AUDIO_PATH)
+  print("✅ Voice generated successfully.")
 
   print("Step 2: Mixing audio and compiling final video...")
   ffmpeg_command = [
