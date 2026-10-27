@@ -12,49 +12,37 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Searching and downloading a trending viral video...")
+  print("Step 1: Downloading direct trending short video...")
 
-  # 🔥 YouTube se viral short video search karke download karega
-  search_query = "ytsearch1:trending viral facts shorts"
-  ydl_command = [
-      "yt-dlp",
-      "-f",
-      "best",
-      "--max-downloads",
-      "1",
-      "-o",
-      RAW_VIDEO,
-      search_query,
-  ]
+  # 🔥 Yahan aap koi bhi alag aur achhi direct MP4 video ka link daal sakte hain
+  # (Taki har baar alag video aaye aur sample video ki zaroorat na pade)
+  video_url = "https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-sky-in-a-sunset-26070-large.mp4"
 
   try:
-    subprocess.run(ydl_command, check=True)
-    print("✅ Viral video downloaded successfully.")
-  except Exception as e:
-    print(
-        f"⚠️ yt-dlp search failed, falling back to sample video: {str(e)}"
-    )
-    fallback_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-    res = requests.get(fallback_url, stream=True)
+    response = requests.get(video_url, stream=True)
     with open(RAW_VIDEO, "wb") as f:
-      for chunk in res.iter_content(chunk_size=1024):
+      for chunk in response.iter_content(chunk_size=1024):
         if chunk:
           f.write(chunk)
+    print("✅ Trending video downloaded successfully.")
+  except Exception as e:
+    print(f"❌ Error downloading video: {str(e)}")
+    raise e
 
-  # 🔥 HINDI AI Voice generate karne ka code (lang="hi")
+  # 🔥 Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
   text_to_hindi = (
-      "Kya aapko ye amazing facts pata the? Video ko last tak zaroor dekhein!"
+      "Duniya ke sabse gazab aur rochak tathya! Ishe sunkar aap bhi hairan"
+      " reh jayenge. Aise aur bhi mazedaar videos ke liye page ko follow"
+      " karein!"
   )
   tts = gTTS(text=text_to_hindi, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Hindi AI Voice generated successfully.")
 
-  print(
-      "Step 2: Processing video, removing old audio & adding Hindi AI Voice..."
-  )
+  print("Step 2: Processing video and syncing Hindi AI Voice...")
 
-  # FFmpeg command jo original audio hata kar Hindi voice jodegi
+  # 🔥 FFmpeg Command jo audio aur video ko perfect sync aur speed mein rakhegi
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -70,7 +58,7 @@ def download_and_process_video():
       "0:v:0",
       "-map",
       "1:a:0",
-      "-shortest",
+      "-shortest",  # Audio aur video ki length barabar rakhega
       "-vf",
       "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
       "eq=brightness=0.03:saturation=1.1",
@@ -79,10 +67,7 @@ def download_and_process_video():
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
-  print(
-      "✅ Video processed successfully with Hindi AI Voice and copyright"
-      " protection."
-  )
+  print("✅ Video processed and synced successfully.")
 
 
 def upload_to_facebook():
@@ -99,7 +84,6 @@ def upload_to_facebook():
     url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
     payload = {"upload_phase": "START", "access_token": FB_ACCESS_TOKEN}
     response_raw = requests.post(url, data=payload)
-    print(f"Facebook Raw Response: {response_raw.text}")
     response = response_raw.json()
 
     if "video_id" not in response or "upload_url" not in response:
