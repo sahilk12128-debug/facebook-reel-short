@@ -22,7 +22,7 @@ def download_and_process_video():
           f.write(chunk)
     print("✅ Raw video downloaded successfully.")
 
-    # 🔥 Step 1.5: AI Voice generate karne ka code (Copyright se bachne ke liye)
+    # Step 1.5: AI Voice generate karne ka code
     print("Step 1.5: Generating AI Voiceover...")
     text_to_speak = "Amazing facts you need to watch! #shorts #viral"
     tts = gTTS(text=text_to_speak, lang="en", slow=False)
@@ -33,25 +33,26 @@ def download_and_process_video():
         "Step 2: Processing video, removing original audio & adding AI Voice..."
     )
 
-    # 🔥 FFmpeg command jo original audio hata kar AI voice ko video ke sath mix karegi
+    # 🔥 Simple aur Error-Free FFmpeg Command
     ffmpeg_command = [
         "ffmpeg",
         "-y",
         "-i",
         RAW_VIDEO,
         "-i",
-        AUDIO_PATH,  # AI audio file input
+        AUDIO_PATH,
         "-c:v",
-        "copy",  # Video ko bina badle fast copy karega
+        "libx264",  # Re-encode video to ensure complete compatibility
         "-c:a",
         "aac",  # Audio format AAC
         "-map",
         "0:v:0",
         "-map",
-        "1:a:0",  # 🔥 Sirf AI voice wali audio rakhega, purana copyright sound khatam!
+        "1:a:0",
         "-shortest",
         "-vf",
-        "eq=brightness=0.03:saturation=1.1",
+        "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+        "eq=brightness=0.03:saturation=1.1",  # Proper 9:16 vertical video formatting
         "-t",
         "30",
         VIDEO_PATH,
