@@ -4,7 +4,7 @@ import requests
 
 # आपकी Facebook Page ID और GitHub Secrets से Access Token अपने आप आ जाएगा
 FACEBOOK_PAGE_ID = "1322066784333919"
-FACEBOOK_ACCESS_TOKEN = os.environ.get("EAAQcE9ZBE5XcBS8ED8MofuTJrG1HCAJD2GABbgsPqbFPopdysLfUMmXZBBLi0SZA2Eg6YiBBvZAj9BxoyMe6N4VIimDlo5vRlnlkinpEpUxGpXZAYgjfpa4VKUsZAczwIQEX4GTphXpi1Q2BkKb5baguCgw0pITA9HBhLiS3NChqNZBaYZBRHZBco5GWcZBDi9ovSktuo6a48t")
+FB_ACCESS_TOKEN = os.environ.get("EAAQcE9ZBE5XcBS8ED8MofuTJrG1HCAJD2GABbgsPqbFPopdysLfUMmXZBBLi0SZA2Eg6YiBBvZAj9BxoyMe6N4VIimDlo5vRlnlkinpEpUxGpXZAYgjfpa4VKUsZAczwIQEX4GTphXpi1Q2BkKb5baguCgw0pITA9HBhLiS3NChqNZBaYZBRHZBco5GWcZBDi9ovSktuo6a48t")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 
@@ -91,7 +91,7 @@ def upload_to_facebook():
             'video_state': 'PUBLISHED',
             'description': 'Automated Daily Movie Short Reel #shorts #viral',
             'video_id': video_id,
-            'access_token': FACEBOOK_ACCESS_TOKEN
+            'access_token': FB_ACCESS_TOKEN
         }
         
         publish_response = requests.post(publish_url, data=publish_payload).json()
