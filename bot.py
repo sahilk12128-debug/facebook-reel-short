@@ -40,9 +40,11 @@ def download_and_process_video():
   tts.save(AUDIO_PATH)
   print("✅ Hindi AI Voice generated successfully.")
 
-  print("Step 2: Processing video and combining audio safely...")
+  print(
+      "Step 2: Processing video with explicit video and audio stream mapping..."
+  )
 
-  # 🔥 Foolproof FFmpeg Command (No strict stream mapping errors, perfectly combines audio + video)
+  # 🔥 Fix: Forcefully mapping video from input 0 and audio from input 1
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -50,20 +52,23 @@ def download_and_process_video():
       RAW_VIDEO,
       "-i",
       AUDIO_PATH,
+      "-filter_complex",
+      "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,eq=brightness=0.03:saturation=1.1[v]",
+      "-map",
+      "[v]",
+      "-map",
+      "1:a",
       "-c:v",
       "libx264",
       "-c:a",
       "aac",
       "-shortest",
-      "-vf",
-      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-      "eq=brightness=0.03:saturation=1.1",
       "-t",
       "30",
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
-  print("✅ Video processed and compiled successfully.")
+  print("✅ Video processed and compiled successfully with visual stream.")
 
 
 def upload_to_facebook():
