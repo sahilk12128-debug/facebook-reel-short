@@ -32,7 +32,8 @@ def download_and_process_video():
     print(
         "Step 2: Processing video, removing original audio & adding AI Voice..."
     )
-    # FFmpeg command jo original audio hata kar AI voice ko video ke sath mix karega
+
+    # 🔥 FFmpeg command jo original audio hata kar AI voice ko video ke sath mix karegi
     ffmpeg_command = [
         "ffmpeg",
         "-y",
@@ -47,7 +48,7 @@ def download_and_process_video():
         "-map",
         "0:v:0",
         "-map",
-        "1:a:0",  # Sirf AI voice wali audio rakhega (Copyright khatam!)
+        "1:a:0",  # 🔥 Sirf AI voice wali audio rakhega, purana copyright sound khatam!
         "-shortest",
         "-vf",
         "eq=brightness=0.03:saturation=1.1",
@@ -56,7 +57,9 @@ def download_and_process_video():
         VIDEO_PATH,
     ]
     subprocess.run(ffmpeg_command, check=True)
-    print("✅ Video processed successfully with AI Voice as 'reel.mp4'.")
+    print(
+        "✅ Video processed successfully with AI Voice and copyright protection."
+    )
 
   except Exception as e:
     print(f"❌ Error during download/processing: {str(e)}")
