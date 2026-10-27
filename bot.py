@@ -12,59 +12,77 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Downloading video via direct source...")
-  video_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+  print("Step 1: Searching and downloading a trending viral video...")
+
+  # 🔥 YouTube se viral short video search karke download karega
+  search_query = "ytsearch1:trending viral facts shorts"
+  ydl_command = [
+      "yt-dlp",
+      "-f",
+      "best",
+      "--max-downloads",
+      "1",
+      "-o",
+      RAW_VIDEO,
+      search_query,
+  ]
+
   try:
-    response = requests.get(video_url, stream=True)
+    subprocess.run(ydl_command, check=True)
+    print("✅ Viral video downloaded successfully.")
+  except Exception as e:
+    print(
+        f"⚠️ yt-dlp search failed, falling back to sample video: {str(e)}"
+    )
+    fallback_url = "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+    res = requests.get(fallback_url, stream=True)
     with open(RAW_VIDEO, "wb") as f:
-      for chunk in response.iter_content(chunk_size=1024):
+      for chunk in res.iter_content(chunk_size=1024):
         if chunk:
           f.write(chunk)
-    print("✅ Raw video downloaded successfully.")
 
-    # Step 1.5: AI Voice generate karne ka code
-    print("Step 1.5: Generating AI Voiceover...")
-    text_to_speak = "Amazing facts you need to watch! #shorts #viral"
-    tts = gTTS(text=text_to_speak, lang="en", slow=False)
-    tts.save(AUDIO_PATH)
-    print("✅ AI Voice generated successfully.")
+  # 🔥 HINDI AI Voice generate karne ka code (lang="hi")
+  print("Step 1.5: Generating Hindi AI Voiceover...")
+  text_to_hindi = (
+      "Kya aapko ye amazing facts pata the? Video ko last tak zaroor dekhein!"
+  )
+  tts = gTTS(text=text_to_hindi, lang="hi", slow=False)
+  tts.save(AUDIO_PATH)
+  print("✅ Hindi AI Voice generated successfully.")
 
-    print(
-        "Step 2: Processing video, removing original audio & adding AI Voice..."
-    )
+  print(
+      "Step 2: Processing video, removing old audio & adding Hindi AI Voice..."
+  )
 
-    # 🔥 Simple aur Error-Free FFmpeg Command
-    ffmpeg_command = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        RAW_VIDEO,
-        "-i",
-        AUDIO_PATH,
-        "-c:v",
-        "libx264",  # Re-encode video to ensure complete compatibility
-        "-c:a",
-        "aac",  # Audio format AAC
-        "-map",
-        "0:v:0",
-        "-map",
-        "1:a:0",
-        "-shortest",
-        "-vf",
-        "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-        "eq=brightness=0.03:saturation=1.1",  # Proper 9:16 vertical video formatting
-        "-t",
-        "30",
-        VIDEO_PATH,
-    ]
-    subprocess.run(ffmpeg_command, check=True)
-    print(
-        "✅ Video processed successfully with AI Voice and copyright protection."
-    )
-
-  except Exception as e:
-    print(f"❌ Error during download/processing: {str(e)}")
-    raise e
+  # FFmpeg command jo original audio hata kar Hindi voice jodegi
+  ffmpeg_command = [
+      "ffmpeg",
+      "-y",
+      "-i",
+      RAW_VIDEO,
+      "-i",
+      AUDIO_PATH,
+      "-c:v",
+      "libx264",
+      "-c:a",
+      "aac",
+      "-map",
+      "0:v:0",
+      "-map",
+      "1:a:0",
+      "-shortest",
+      "-vf",
+      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+      "eq=brightness=0.03:saturation=1.1",
+      "-t",
+      "30",
+      VIDEO_PATH,
+  ]
+  subprocess.run(ffmpeg_command, check=True)
+  print(
+      "✅ Video processed successfully with Hindi AI Voice and copyright"
+      " protection."
+  )
 
 
 def upload_to_facebook():
@@ -77,7 +95,6 @@ def upload_to_facebook():
     return
 
   try:
-    # Step 4: Start the Reel Upload Session using 'START' phase
     print("Step 4: Starting video upload session with Facebook...")
     url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
     payload = {"upload_phase": "START", "access_token": FB_ACCESS_TOKEN}
@@ -93,7 +110,6 @@ def upload_to_facebook():
     upload_url = response["upload_url"]
     print(f"✅ Start successful! Video ID: {video_id}")
 
-    # Step 5: Upload the Video Binary
     print("Step 5: Uploading video binary data to Facebook...")
     with open(VIDEO_PATH, "rb") as video_file:
       video_bytes = video_file.read()
@@ -103,19 +119,17 @@ def upload_to_facebook():
         "offset": "0",
         "file_size": str(len(video_bytes)),
     }
-    upload_response = requests.post(
-        upload_url, headers=headers, data=video_bytes
-    ).json()
-    print(f"Upload Binary Response: {upload_response}")
+    requests.post(upload_url, headers=headers, data=video_bytes)
     print("✅ Video binary uploaded successfully.")
 
-    # Step 6: Finish/Publish the Reel using 'FINISH' phase
     print("Step 6: Publishing the Reel on Facebook...")
     publish_url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
     publish_payload = {
         "upload_phase": "FINISH",
         "video_state": "PUBLISHED",
-        "description": "Automated Daily Movie Short Reel #shorts #viral",
+        "description": (
+            "Gajab ke rochak tathya! Zaroor dekhein #shorts #viral #hindi"
+        ),
         "video_id": video_id,
         "access_token": FB_ACCESS_TOKEN,
     }
