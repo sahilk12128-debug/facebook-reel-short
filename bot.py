@@ -8,17 +8,14 @@ FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
-CLEAN_VIDEO = "clean.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Downloading standard reliable video...")
+  print("Step 1: Downloading direct MP4 video...")
 
-  video_url = (
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
-      "ForBiggerBlazes.mp4"
-  )
+  # Ekdum secure aur direct MP4 download link
+  video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
 
   try:
     response = requests.get(video_url, stream=True)
@@ -31,21 +28,6 @@ def download_and_process_video():
     print(f"❌ Error downloading video: {str(e)}")
     raise e
 
-  # Step 1.1: Pehle raw video ko clean MP4 mein normalize karo taaki koi stream error na aaye
-  print("Step 1.1: Normalizing raw video format...")
-  normalize_cmd = [
-      "ffmpeg",
-      "-y",
-      "-i",
-      RAW_VIDEO,
-      "-c:v",
-      "libx264",
-      "-c:a",
-      "aac",
-      CLEAN_VIDEO,
-  ]
-  subprocess.run(normalize_cmd, check=True)
-
   # Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
   text_to_hindi = (
@@ -57,14 +39,14 @@ def download_and_process_video():
   tts.save(AUDIO_PATH)
   print("✅ Hindi AI Voice generated successfully.")
 
-  print("Step 2: Processing video and combining Hindi AI Voice...")
+  print("Step 2: Processing video and mixing Hindi AI Voice...")
 
-  # Step 2: Clean video aur Hindi voice ko 9:16 format mein mix karo
+  # Clean aur Direct FFmpeg Command bina kisi stream error ke
   ffmpeg_command = [
       "ffmpeg",
       "-y",
       "-i",
-      CLEAN_VIDEO,
+      RAW_VIDEO,
       "-i",
       AUDIO_PATH,
       "-c:v",
