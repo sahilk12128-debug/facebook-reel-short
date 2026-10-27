@@ -1,4 +1,5 @@
 import os
+import random
 import subprocess
 import requests
 from gtts import gTTS
@@ -10,44 +11,84 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
+# Facts aur Motivation ki Unique Scripts
+FACTS_AND_MOTIVATION = [
+    {
+        "text": (
+            "Duniya ka sabse bada sach yeh hai ki mehnat kabhi vyarth nahi hoti."
+            " Apne sapno par vishwas rakho aur aage badhte raho!"
+        ),
+        "tag": "#motivation #success #hindi",
+    },
+    {
+        "text": (
+            "Kya aapko pata hai? Insaan ka dimaag itni urja paida karta hai jisse"
+            " ek chota bulb jal sakta hai. Aise hi amazing facts ke liye follow"
+            " karein!"
+        ),
+        "tag": "#facts #amazing #knowledge",
+    },
+    {
+        "text": (
+            "Zindagi mein agar aage badhna hai toh darna chhod do, kyunki jo"
+            " dar gaya, samajho woh haar gaya. Mehnat karo aur jeet kar dikhao!"
+        ),
+        "tag": "#motivationalquotes #hindi #viral",
+    },
+    {
+        "text": (
+            "Kya aap jaante hain? Paani ke baad duniya mein sabse zyada piya"
+            " jaane wala drink Chai hai! Is rochak tathya ke liye page ko follow"
+            " karein."
+        ),
+        "tag": "#interestingfacts #tea #facts",
+    },
+    {
+        "text": (
+            "Muskil waqt wahi log paas karte hain jo khud par bharosa rakhte"
+            " hain. Aapki aaj ki mehnat hi aapka kal banayegi!"
+        ),
+        "tag": "#selfbelief #motivation #shorts",
+    },
+]
+
 
 def download_and_process_video():
-  print(
-      "Step 1: Generating high-quality solid background video locally (No"
-      " download errors)..."
-  )
+  print("Step 1: Generating dynamic animated visual background...")
 
-  # 🔥 Internet download ki jagah FFmpeg se seedha clean video generate hogi (100% Safe)
-  fail_safe_cmd = [
+  # 🔥 Moving Gradient Background (Jisme continuous visual motion / graphics effect dikhega)
+  motion_bg_cmd = [
       "ffmpeg",
       "-y",
       "-f",
       "lavfi",
       "-i",
-      "color=c=navy:s=1080x1920:d=30",
+      (
+          "testsrc=size=1080x1920:rate=25:duration=30,"
+          "geq=r='X/2+T*25':g='Y/2+T*25':b='128+sin(T)*128'"
+      ),
       "-c:v",
       "libx264",
       "-pix_fmt",
       "yuv420p",
       RAW_VIDEO,
   ]
-  subprocess.run(fail_safe_cmd, check=True)
-  print("✅ Base video generated successfully.")
+  subprocess.run(motion_bg_cmd, check=True)
+  print("✅ Animated motion background generated successfully.")
 
-  # Step 1.5: Hindi AI Voice generate karne ka code
-  print("Step 1.5: Generating Hindi AI Voiceover...")
-  text_to_hindi = (
-      "Duniya ke sabse gazab aur rochak tathya! Ishe sunkar aap bhi hairan"
-      " reh jayenge. Aise aur bhi mazedaar videos ke liye page ko follow"
-      " karein!"
-  )
-  tts = gTTS(text=text_to_hindi, lang="hi", slow=False)
+  # Step 1.5: Random Unique Hindi Script & Voiceover
+  selected_content = random.choice(FACTS_AND_MOTIVATION)
+  hindi_script = selected_content["text"]
+  hashtag_tag = selected_content["tag"]
+
+  print(f"Step 1.5: Generating voiceover for: {hindi_script}")
+  tts = gTTS(text=hindi_script, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
-  print("✅ Hindi AI Voice generated successfully.")
+  print("✅ Voice generated successfully.")
 
-  print("Step 2: Processing video and mixing Hindi AI Voice...")
+  print("Step 2: Processing video and mixing audio...")
 
-  # FFmpeg Command jo background video aur Hindi voice ko perfect sync karegi
+  # FFmpeg command jo animated background aur voice ko mix karegi
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -71,8 +112,10 @@ def download_and_process_video():
   subprocess.run(ffmpeg_command, check=True)
   print("✅ Video processed and compiled successfully.")
 
+  return hindi_script + " " + hashtag_tag
 
-def upload_to_facebook():
+
+def upload_to_facebook(caption):
   print("Step 3: Starting Facebook Reel Upload process...")
   if not FB_ACCESS_TOKEN:
     print("❌ Error: FB_ACCESS_TOKEN is missing in GitHub Secrets!")
@@ -113,9 +156,7 @@ def upload_to_facebook():
     publish_payload = {
         "upload_phase": "FINISH",
         "video_state": "PUBLISHED",
-        "description": (
-            "Gajab ke rochak tathya! Zaroor dekhein #shorts #viral #hindi"
-        ),
+        "description": caption,
         "video_id": video_id,
         "access_token": FB_ACCESS_TOKEN,
     }
@@ -134,5 +175,5 @@ def upload_to_facebook():
 
 
 if __name__ == "__main__":
-  download_and_process_video()
-  upload_to_facebook()
+  dynamic_caption = download_and_process_video()
+  upload_to_facebook(dynamic_caption)
