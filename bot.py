@@ -2,9 +2,9 @@ import os
 import subprocess
 import requests
 
-# आपकी Facebook Page ID और Access Token यहाँ सेट हैं
+# आपकी Facebook Page ID और GitHub Secrets से Access Token अपने आप आ जाएगा
 FACEBOOK_PAGE_ID = "1322066784333919"
-FACEBOOK_ACCESS_TOKEN = "EAAQcE9ZBE5XcBS0eXCOzM59mbl7hh6EuEnTYvb9dmscZCuVPwTNPcZA48htXvkYAa1zmdthG8prPf9PMTsl09CrZCBHX4T5jHVdqJAqdGE13yTnoO0L4Mur1MiDiP0ADVksyqzF5dlhmtlsYgNIJj10WaFAkVtcobHwcYpygCyGPT6vDAZCWYs00Wb6ZAuRjfhZAxPVg4S5ZAqL9hZBFYH33NkQaxwZCO3oOZAt"
+FACEBOOK_ACCESS_TOKEN = os.environ.get("FACEBOOK_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 
@@ -37,6 +37,10 @@ def download_and_process_video():
 
 def upload_to_facebook():
     print("Step 3: Starting Facebook Reel Upload process...")
+
+    if not FACEBOOK_ACCESS_TOKEN:
+        print("❌ Error: FACEBOOK_ACCESS_TOKEN is missing in GitHub Secrets!")
+        return
 
     if not os.path.exists(VIDEO_PATH):
         print(f"❌ Error: Processed video file '{VIDEO_PATH}' not found!")
