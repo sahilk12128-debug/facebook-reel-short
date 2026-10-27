@@ -38,7 +38,7 @@ def download_and_process_video():
 def upload_to_facebook():
     print("Step 3: Starting Facebook Reel Upload process...")
 
-    if not FACEBOOK_ACCESS_TOKEN:
+    if not FB_ACCESS_TOKEN:
         print("❌ Error: FACEBOOK_ACCESS_TOKEN is missing in GitHub Secrets!")
         return
 
