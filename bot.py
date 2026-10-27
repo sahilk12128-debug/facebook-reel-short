@@ -12,21 +12,27 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def download_and_process_video():
-  print("Step 1: Downloading direct MP4 video...")
+  print(
+      "Step 1: Generating high-quality solid background video locally (No"
+      " download errors)..."
+  )
 
-  # Ekdum secure aur direct MP4 download link
-  video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
-
-  try:
-    response = requests.get(video_url, stream=True)
-    with open(RAW_VIDEO, "wb") as f:
-      for chunk in response.iter_content(chunk_size=1024):
-        if chunk:
-          f.write(chunk)
-    print("✅ Video downloaded successfully.")
-  except Exception as e:
-    print(f"❌ Error downloading video: {str(e)}")
-    raise e
+  # 🔥 Internet download ki jagah FFmpeg se seedha clean video generate hogi (100% Safe)
+  fail_safe_cmd = [
+      "ffmpeg",
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      "color=c=navy:s=1080x1920:d=30",
+      "-c:v",
+      "libx264",
+      "-pix_fmt",
+      "yuv420p",
+      RAW_VIDEO,
+  ]
+  subprocess.run(fail_safe_cmd, check=True)
+  print("✅ Base video generated successfully.")
 
   # Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
@@ -41,7 +47,7 @@ def download_and_process_video():
 
   print("Step 2: Processing video and mixing Hindi AI Voice...")
 
-  # Clean aur Direct FFmpeg Command bina kisi stream error ke
+  # FFmpeg Command jo background video aur Hindi voice ko perfect sync karegi
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -58,9 +64,6 @@ def download_and_process_video():
       "-map",
       "1:a:0",
       "-shortest",
-      "-vf",
-      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-      "eq=brightness=0.03:saturation=1.1",
       "-t",
       "30",
       VIDEO_PATH,
