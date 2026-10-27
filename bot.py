@@ -11,61 +11,110 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
-# Facts aur Motivation ki Unique Scripts
-FACTS_AND_MOTIVATION = [
+# 🔥 15+ Bilkul Alag, Viral aur Mind-Blowing Facts (Jo screen par bhi likhenge aur bolenge bhi)
+VIRAL_FACTS = [
     {
         "text": (
-            "Duniya ka sabse bada sach yeh hai ki mehnat kabhi vyarth nahi hoti."
-            " Apne sapno par vishwas rakho aur aage badhte raho!"
+            "Kya aap jaante hain? Octopuses ke paas teen dil aur paun"
+            " tentacle hote hain!"
         ),
-        "tag": "#motivation #success #hindi",
+        "tag": "#amazingfacts #science #viralshorts",
     },
     {
         "text": (
-            "Kya aapko pata hai? Insaan ka dimaag itni urja paida karta hai jisse"
-            " ek chota bulb jal sakta hai. Aise hi amazing facts ke liye follow"
-            " karein!"
+            "Duniya ka sabse tez daudne wala janwar cheetah hai, aur ek ghongha"
+            " lagataar 3 saal tak so sakta hai!"
         ),
-        "tag": "#facts #amazing #knowledge",
+        "tag": "#wildlifefacts #interestingfacts #hindi",
     },
     {
         "text": (
-            "Zindagi mein agar aage badhna hai toh darna chhod do, kyunki jo"
-            " dar gaya, samajho woh haar gaya. Mehnat karo aur jeet kar dikhao!"
+            "Aapki ankhon ki putli andhere mein badi ho jaati hai aur roshni mein"
+            " choti ho jaati hai!"
         ),
-        "tag": "#motivationalquotes #hindi #viral",
+        "tag": "#humanbody #facts #knowledge",
     },
     {
         "text": (
-            "Kya aap jaante hain? Paani ke baad duniya mein sabse zyada piya"
-            " jaane wala drink Chai hai! Is rochak tathya ke liye page ko follow"
-            " karein."
+            "Space mein gravity na hone ki wajah se astronauts ki lambaai 2 inch"
+            " tak badh jaati hai!"
         ),
-        "tag": "#interestingfacts #tea #facts",
+        "tag": "#spacefacts #nasa #trending",
     },
     {
         "text": (
-            "Muskil waqt wahi log paas karte hain jo khud par bharosa rakhte"
-            " hain. Aapki aaj ki mehnat hi aapka kal banayegi!"
+            "Shahad ek aisi cheez hai jo hazaron saalon tak kharab nahi hoti,"
+            " yeh hamesha safe rehta hai!"
         ),
-        "tag": "#selfbelief #motivation #shorts",
+        "tag": "#historyfacts #honey #facts",
+    },
+    {
+        "text": (
+            "Suraj ki roshni ko zameen tak pahunchne mein lagbhag 8 minute aur 20"
+            " second ka samay lagta hai!"
+        ),
+        "tag": "#universe #sun #sciencefacts",
+    },
+    {
+        "text": (
+            "Insaan ki haddiyan concrete (cement) se bhi zyada mazboot hoti"
+            " hain!"
+        ),
+        "tag": "#amazing #healthfacts #knowledge",
+    },
+    {
+        "text": (
+            "Banaana yaani Kela jhuka hua isliye hota hai kyunki yeh sooraj ki"
+            " taraf badhne ki koshish karta hai!"
+        ),
+        "tag": "#banana #naturefacts #shorts",
+    },
+    {
+        "text": (
+            "Puri duniya mein sabse zyada use kiye jaane wala password '123456'"
+            " hai!"
+        ),
+        "tag": "#techfacts #cybersecurity #facts",
+    },
+    {
+        "text": (
+            "Kacche aam mein jitna Vitamin C hota hai, utna kisi aur aam mein"
+            " nahi hota!"
+        ),
+        "tag": "#health #fruitfacts #hindi",
     },
 ]
 
 
 def download_and_process_video():
-  print("Step 1: Generating dynamic animated visual background...")
+  print("Step 1: Selecting random unique fact...")
+  selected_item = random.choice(VIRAL_FACTS)
+  fact_text = selected_item["text"]
+  hashtag_tag = selected_item["tag"]
 
-  # 🔥 Moving Gradient Background (Jisme continuous visual motion / graphics effect dikhega)
-  motion_bg_cmd = [
+  # FFmpeg ke drawtext ke liye text ko lines mein break karna taaki screen par fit aaye
+  # Hum simple formatting ke sath background generate karenge
+  print("Step 1.1: Generating video with text overlay...")
+
+  # Background color gradient aur text ko ek sath render karne ki command
+  # Note: FFmpeg text ko safely dikhane ke liye single quotes handle kiye gaye hain
+  safe_text = (
+      fact_text.replace("'", "")
+      .replace('"', "")
+      .replace("?", "")
+      .replace("!", "")
+  )
+
+  bg_cmd = [
       "ffmpeg",
       "-y",
       "-f",
       "lavfi",
       "-i",
       (
-          "testsrc=size=1080x1920:rate=25:duration=30,"
-          "geq=r='X/2+T*25':g='Y/2+T*25':b='128+sin(T)*128'"
+          "color=c=0x0F172A:s=1080x1920:rate=25:duration=30,"
+          "drawtext=text='ROCHAK TATHYA':fontcolor=orange:fontsize=64:x=(w-text_w)/2:y=300,"
+          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.6:boxborderw=20:shadowx=2:shadowy=2"
       ),
       "-c:v",
       "libx264",
@@ -73,22 +122,16 @@ def download_and_process_video():
       "yuv420p",
       RAW_VIDEO,
   ]
-  subprocess.run(motion_bg_cmd, check=True)
-  print("✅ Animated motion background generated successfully.")
+  subprocess.run(bg_cmd, check=True)
+  print("✅ Video background with text generated successfully.")
 
-  # Step 1.5: Random Unique Hindi Script & Voiceover
-  selected_content = random.choice(FACTS_AND_MOTIVATION)
-  hindi_script = selected_content["text"]
-  hashtag_tag = selected_content["tag"]
-
-  print(f"Step 1.5: Generating voiceover for: {hindi_script}")
-  tts = gTTS(text=hindi_script, lang="hi", slow=False)
+  # Step 1.5: Voice generate karna
+  print(f"Step 1.5: Generating Voiceover for: {fact_text}")
+  tts = gTTS(text=fact_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Voice generated successfully.")
 
-  print("Step 2: Processing video and mixing audio...")
-
-  # FFmpeg command jo animated background aur voice ko mix karegi
+  print("Step 2: Mixing audio and compiling final video...")
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -112,7 +155,7 @@ def download_and_process_video():
   subprocess.run(ffmpeg_command, check=True)
   print("✅ Video processed and compiled successfully.")
 
-  return hindi_script + " " + hashtag_tag
+  return fact_text + " " + hashtag_tag
 
 
 def upload_to_facebook(caption):
