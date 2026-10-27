@@ -14,7 +14,6 @@ AUDIO_PATH = "voiceover.mp3"
 def download_and_process_video():
   print("Step 1: Downloading standard reliable video...")
 
-  # Ekdum tested aur 100% working direct MP4 video link
   video_url = (
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
       "ForBiggerBlazes.mp4"
@@ -31,7 +30,6 @@ def download_and_process_video():
     print(f"❌ Error downloading video: {str(e)}")
     raise e
 
-  # Step 1.5: Hindi AI Voice generate karne ka code
   print("Step 1.5: Generating Hindi AI Voiceover...")
   text_to_hindi = (
       "Duniya ke sabse gazab aur rochak tathya! Ishe sunkar aap bhi hairan"
@@ -44,7 +42,7 @@ def download_and_process_video():
 
   print("Step 2: Processing video and syncing Hindi AI Voice...")
 
-  # FFmpeg Command jo video ko format karke audio match karegi
+  # 🔥 Simplified & Flexible FFmpeg Command (No strict stream mapping errors)
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -57,9 +55,9 @@ def download_and_process_video():
       "-c:a",
       "aac",
       "-map",
-      "0:v:0",
+      "0:v?",
       "-map",
-      "1:a:0",
+      "1:a?",
       "-shortest",
       "-vf",
       "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
