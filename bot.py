@@ -11,108 +11,91 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
-# 🔥 Bilkul Naye aur Viral Facts ki List (Har baar alag fact aayega)
+# 🔥 Short aur Ekdum Perfect Fit Facts (Jo screen par bilkul cut nahi honge)
 VIRAL_FACTS = [
     {
-        "text": (
-            "Kya aap jaante hain? Octopuses ke paas teen dil aur chaar tentacle"
-            " hote hain!"
-        ),
+        "text": "Octopuses ke paas 3 dil aur 4 tentacle hote hain!",
         "tag": "#amazingfacts #science #viralshorts",
     },
     {
         "text": (
-            "Duniya ka sabse tez daudne wala janwar cheetah hai, aur ek ghongha"
-            " lagataar 3 saal tak so sakta hai!"
+            "Duniya ka sabse tez daudne wala janwar cheetah hai, aur ghongha"
+            " 3 saal tak so sakta hai!"
         ),
         "tag": "#wildlifefacts #interestingfacts #hindi",
     },
     {
         "text": (
-            "Aapki ankhon ki putli andhere mein badi ho jaati hai aur roshni mein"
-            " choti ho jaati hai!"
+            "Aapki ankhon ki putli andhere mein badi aur roshni mein choti ho"
+            " jaati hai!"
         ),
         "tag": "#humanbody #facts #knowledge",
     },
     {
         "text": (
             "Space mein gravity na hone ki wajah se astronauts ki lambaai 2 inch"
-            " tak badh jaati hai!"
+            " badh jaati hai!"
         ),
         "tag": "#spacefacts #nasa #trending",
     },
     {
         "text": (
-            "Shahad ek aisi cheez hai jo hazaron saalon tak kharab nahi hoti,"
-            " yeh hamesha safe rehta hai!"
+            "Shahad hazaron saalon tak kharab nahi hota, yeh hamesha safe rehta"
+            " hai!"
         ),
         "tag": "#historyfacts #honey #facts",
     },
     {
         "text": (
-            "Suraj ki roshni ko zameen tak pahunchne mein lagbhag 8 minute aur 20"
-            " second ka samay lagta hai!"
+            "Suraj ki roshni ko zameen tak pahunchne mein 8 minute 20 second"
+            " lagte hain!"
         ),
         "tag": "#universe #sun #sciencefacts",
     },
     {
-        "text": (
-            "Insaan ki haddiyan cement se bhi zyada mazboot hoti hain!"
-        ),
+        "text": "Insaan ki haddiyan cement se bhi zyada mazboot hoti hain!",
         "tag": "#amazing #healthfacts #knowledge",
     },
     {
-        "text": (
-            "Kela jhuka hua isliye hota hai kyunki yeh sooraj ki taraf badhne ki"
-            " koshish karta hai!"
-        ),
+        "text": "Kela jhuka hua isliye hota hai kyunki yeh sooraj ki taraf badhta hai!",
         "tag": "#banana #naturefacts #shorts",
     },
 ]
 
 
 def download_and_process_video():
-  print("Step 1: Selecting random unique fact...")
+  print("Step 1: Downloading dynamic motion background video...")
+
+  # 🔥 Ek aisi video ka link jisme background mein continuous movement / animation chalegi
+  video_url = (
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
+      "ForBiggerEscapes.mp4"
+  )
+
+  try:
+    response = requests.get(video_url, stream=True)
+    with open(RAW_VIDEO, "wb") as f:
+      for chunk in response.iter_content(chunk_size=1024):
+        if chunk:
+          f.write(chunk)
+    print("✅ Motion background video downloaded successfully.")
+  except Exception as e:
+    print(f"❌ Error downloading video: {str(e)}")
+    raise e
+
+  # Step 1.5: Random Unique Fact & Voiceover
   selected_item = random.choice(VIRAL_FACTS)
   fact_text = selected_item["text"]
   hashtag_tag = selected_item["tag"]
 
-  print("Step 1.1: Generating video background with text overlay...")
-  safe_text = (
-      fact_text.replace("'", "")
-      .replace('"', "")
-      .replace("?", "")
-      .replace("!", "")
-  )
-
-  # FFmpeg ke zariye background aur screen par text likhne ka code
-  bg_cmd = [
-      "ffmpeg",
-      "-y",
-      "-f",
-      "lavfi",
-      "-i",
-      (
-          "color=c=0x0F172A:s=1080x1920:rate=25:duration=30,"
-          "drawtext=text='ROCHAK TATHYA':fontcolor=orange:fontsize=64:x=(w-text_w)/2:y=300,"
-          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.6:boxborderw=20:shadowx=2:shadowy=2"
-      ),
-      "-c:v",
-      "libx264",
-      "-pix_fmt",
-      "yuv420p",
-      RAW_VIDEO,
-  ]
-  subprocess.run(bg_cmd, check=True)
-  print("✅ Video background with text generated successfully.")
-
-  # Step 1.5: gTTS se clear voice generate karna
   print(f"Step 1.5: Generating Voiceover for: {fact_text}")
   tts = gTTS(text=fact_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Voice generated successfully.")
 
-  print("Step 2: Mixing audio and compiling final video...")
+  print("Step 2: Processing video, adding 9:16 layout & mixing audio...")
+
+  # FFmpeg command jo background video ko 9:16 shorts format mein banayegi aur voice mix karegi
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -129,6 +112,9 @@ def download_and_process_video():
       "-map",
       "1:a:0",
       "-shortest",
+      "-vf",
+      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+      "eq=brightness=0.02:saturation=1.2",
       "-t",
       "30",
       VIDEO_PATH,
