@@ -11,7 +11,7 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
-# 🔥 Bilkul Naye aur Viral Facts ki List (Jo screen par bhi likhenge aur bolenge bhi)
+# 🔥 Bilkul Naye aur Viral Facts ki List
 VIRAL_FACTS = [
     {
         "text": "Octopuses ke paas teen dil aur chaar tentacle hote hain!",
@@ -69,7 +69,7 @@ def download_and_process_video():
   fact_text = selected_item["text"]
   hashtag_tag = selected_item["tag"]
 
-  print("Step 1.1: Generating video background with text overlay...")
+  print("Step 1.1: Generating animated background with text overlay...")
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -77,7 +77,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # FFmpeg ke zariye background aur screen par text likhne ka 100% stable tarika
+  # 🔥 Animated Moving Gradient Background + Text Overlay (100% Safe & Error-Free)
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -85,9 +85,10 @@ def download_and_process_video():
       "lavfi",
       "-i",
       (
-          "color=c=0x0F172A:s=1080x1920:rate=25:duration=30,"
-          "drawtext=text='ROCHAK TATHYA':fontcolor=orange:fontsize=64:x=(w-text_w)/2:y=300,"
-          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.7:boxborderw=30:shadowx=2:shadowy=2"
+          "testsrc=size=1080x1920:rate=25:duration=30,"
+          "geq=r='X/2+T*25':g='Y/2+T*25':b='128+sin(T)*128',"
+          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=300,"
+          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=30:shadowx=2:shadowy=2"
       ),
       "-c:v",
       "libx264",
@@ -96,7 +97,7 @@ def download_and_process_video():
       RAW_VIDEO,
   ]
   subprocess.run(bg_cmd, check=True)
-  print("✅ Video background with text generated successfully.")
+  print("✅ Animated video background generated successfully.")
 
   # Step 1.5: gTTS se clear voice generate karna
   print(f"Step 1.5: Generating Voiceover for: {fact_text}")
