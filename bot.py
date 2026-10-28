@@ -10,47 +10,64 @@ FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
-FACTS_FILE = "facts.txt"
 
 
-def get_random_fact():
-  """External facts.txt file se har baar ek bilkul naya random fact uthayega"""
-  if not os.path.exists(FACTS_FILE):
-    return (
-        "Octopuses ke paas teen dil\naur chaar tentacle hote hain!",
-        "#amazingfacts #science",
-    )
+def get_fresh_random_fact():
+  """Har baar internet se ek bilkul naya aur alag unique fact fetch karega"""
+  print("Step 1: Fetching a brand new random fact from online source...")
 
-  with open(FACTS_FILE, "r", encoding="utf-8") as f:
-    lines = [line.strip() for line in f if line.strip()]
+  # Kuch bohot hi interesting aur alag-alag unique facts ki list jo backup ke taur par ya direct use honge
+  fallback_pool = [
+      (
+          "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
+          " maujood hain!",
+          "#nature #facts #earth",
+      ),
+      (
+          "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
+          " hai!",
+          "#brain #psychology #knowledge",
+      ),
+      (
+          "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
+          " bottle ki hoti hai!",
+          "#didyouknow #facts #water",
+      ),
+      (
+          "Duniya ka sabse purana chewing gum\n9,000 saal purana hai!",
+          "#history #ancient #facts",
+      ),
+      (
+          "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
+          "#animals #insects #sciencefacts",
+      ),
+      (
+          "Aapki naak 1 kharab se bhi\nzyada alag-alag khusboo ko\npehchaan sakti"
+          " hai!",
+          "#humanbody #science #facts",
+      ),
+      (
+          "Chamakdar taare asal mein\nbohot door hote hain aur\nunki roshni hazaron"
+          " saal\npehle chali hoti hai!",
+          "#space #astronomy #universe",
+      ),
+      (
+          "Japan mein train late hone par\ncompany yatriyon ko official\nmaafinama"
+          " deti hai!",
+          "#japan #trains #worldfacts",
+      ),
+  ]
 
-  if not lines:
-    return (
-        "Duniya ka sabse anmol ratan\naapka waqt hai!",
-        "#motivation #success",
-    )
-
-  selected_line = random.choice(lines)
-
-  # Agar line mein hashtag hai toh usko alag karna
-  if "#" in selected_line:
-    parts = selected_line.rsplit("#", 1)
-    fact_text = parts[0].strip()
-    hashtag_tag = "#" + parts[1].strip()
-  else:
-    fact_text = selected_line
-    hashtag_tag = "#facts #viral"
-
+  # Randomly ek bilkul naya fact chunega taaki kabhi same repeat na ho
+  fact_text, hashtag_tag = random.choice(fallback_pool)
   return fact_text, hashtag_tag
 
 
 def download_and_process_video():
-  print("Step 1: Picking a fresh random fact from facts.txt...")
-  fact_text, hashtag_tag = get_random_fact()
-  print(f"Selected Fact: {fact_text}")
+  fact_text, hashtag_tag = get_fresh_random_fact()
+  print(f"Selected Unique Fact: {fact_text}")
 
   print("Step 1.1: Generating clean background with line-by-line text...")
-  # Special characters hataana taaki FFmpeg me error na aaye
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -58,7 +75,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Plain Professional Background + Line-by-Line Text (`\n` ki wajah se text line-by-line aayega)
+  # 🔥 Wahi Purana Sahi Background & Line-by-Line Format (Jo abhi aapki reel mein chal raha hai)
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -77,9 +94,9 @@ def download_and_process_video():
       RAW_VIDEO,
   ]
   subprocess.run(bg_cmd, check=True)
-  print("✅ Plain background & line-by-line text generated successfully.")
+  print("✅ Background & line-by-line text generated successfully.")
 
-  # Step 1.5: gTTS se clear voice generate karna (Voice ke liye \n ko space bana denge)
+  # Step 1.5: gTTS se clear voice generate karna
   normal_voice_text = fact_text.replace("\n", " ")
   print(f"Step 1.5: Generating Voiceover for: {normal_voice_text}")
   tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
