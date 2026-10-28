@@ -10,66 +10,48 @@ FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
+FACTS_FILE = "facts.txt"
 
-# 🔥 Bilkul Naye aur Viral Facts ki List
-VIRAL_FACTS = [
-    {
-        "text": "Octopuses ke paas teen dil aur chaar tentacle hote hain!",
-        "tag": "#amazingfacts #science #viralshorts",
-    },
-    {
-        "text": (
-            "Duniya ka sabse tez daudne wala janwar cheetah hai, aur ghongha"
-            " 3 saal tak so sakta hai!"
-        ),
-        "tag": "#wildlifefacts #interestingfacts #hindi",
-    },
-    {
-        "text": (
-            "Aapki ankhon ki putli andhere mein badi aur roshni mein choti ho"
-            " jaati hai!"
-        ),
-        "tag": "#humanbody #facts #knowledge",
-    },
-    {
-        "text": (
-            "Space mein gravity na hone ki wajah se astronauts ki lambaai 2 inch"
-            " badh jaati hai!"
-        ),
-        "tag": "#spacefacts #nasa #trending",
-    },
-    {
-        "text": (
-            "Shahad hazaron saalon tak kharab nahi hota, yeh hamesha safe rehta"
-            " hai!"
-        ),
-        "tag": "#historyfacts #honey #facts",
-    },
-    {
-        "text": (
-            "Suraj ki roshni ko zameen tak pahunchne mein 8 minute 20 second"
-            " lagte hain!"
-        ),
-        "tag": "#universe #sun #sciencefacts",
-    },
-    {
-        "text": "Insaan ki haddiyan cement se bhi zyada mazboot hoti hain!",
-        "tag": "#amazing #healthfacts #knowledge",
-    },
-    {
-        "text": "Kela jhuka hua isliye hota hai kyunki yeh sooraj ki taraf badhta hai!",
-        "tag": "#banana #naturefacts #shorts",
-    },
-]
+
+def get_random_fact():
+  """External facts.txt file se ek random fact aur hashtag uthayega"""
+  if not os.path.exists(FACTS_FILE):
+    # Agar file nahi mili toh backup fact
+    return (
+        "Octopuses ke paas teen dil aur chaar tentacle hote hain!",
+        "#amazingfacts #science",
+    )
+
+  with open(FACTS_FILE, "r", encoding="utf-8") as f:
+    lines = [line.strip() for line in f if line.strip()]
+
+  if not lines:
+    return (
+        "Duniya ka sabse anmol ratan aapka waqt hai!",
+        "#motivation #success",
+    )
+
+  selected_line = random.choice(lines)
+
+  # Agar line mein hashtag hai toh usko alag karna
+  if "#" in selected_line:
+    parts = selected_line.rsplit("#", 1)
+    fact_text = parts[0].strip()
+    hashtag_tag = "#" + parts[1].strip()
+  else:
+    fact_text = selected_line
+    hashtag_tag = "#facts #viral"
+
+  return fact_text, hashtag_tag
 
 
 def download_and_process_video():
-  print("Step 1: Selecting random unique fact...")
-  selected_item = random.choice(VIRAL_FACTS)
-  fact_text = selected_item["text"]
-  hashtag_tag = selected_item["tag"]
+  print("Step 1: Picking a fresh random fact from facts.txt...")
+  fact_text, hashtag_tag = get_random_fact()
 
-  print("Step 1.1: Generating animated background with text overlay...")
+  print(f"Selected Fact: {fact_text}")
+
+  print("Step 1.1: Generating animated background with line-by-line text...")
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -77,7 +59,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Animated Moving Gradient Background + Text Overlay (100% Safe & Error-Free)
+  # 🔥 Animated Moving Gradient Background + Line-by-Line Text Overlay
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -86,9 +68,9 @@ def download_and_process_video():
       "-i",
       (
           "testsrc=size=1080x1920:rate=25:duration=30,"
-          "geq=r='X/2+T*25':g='Y/2+T*25':b='128+sin(T)*128',"
-          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=300,"
-          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=30:shadowx=2:shadowy=2"
+          "geq=r='X/3+T*30':g='Y/3+T*30':b='150+sin(T)*100',"
+          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=250,"
+          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.8:boxborderw=40:shadowx=2:shadowy=2"
       ),
       "-c:v",
       "libx264",
@@ -97,11 +79,12 @@ def download_and_process_video():
       RAW_VIDEO,
   ]
   subprocess.run(bg_cmd, check=True)
-  print("✅ Animated video background generated successfully.")
+  print("✅ Animated background & text generated successfully.")
 
   # Step 1.5: gTTS se clear voice generate karna
-  print(f"Step 1.5: Generating Voiceover for: {fact_text}")
-  tts = gTTS(text=fact_text, lang="hi", slow=False)
+  normal_voice_text = fact_text.replace("\n", " ")
+  print(f"Step 1.5: Generating Voiceover for: {normal_voice_text}")
+  tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Voice generated successfully.")
 
@@ -129,7 +112,7 @@ def download_and_process_video():
   subprocess.run(ffmpeg_command, check=True)
   print("✅ Video processed and compiled successfully.")
 
-  return fact_text + " " + hashtag_tag
+  return normal_voice_text + " " + hashtag_tag
 
 
 def upload_to_facebook(caption):
