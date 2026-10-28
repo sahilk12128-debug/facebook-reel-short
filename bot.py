@@ -4,17 +4,17 @@ import subprocess
 import requests
 from gtts import gTTS
 
-# आपकी Facebook Page ID और GitHub Secrets से Access Token
+# आपकी Facebook Page आईडी और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
-# 🔥 Short aur Ekdum Perfect Fit Facts (Jo screen par bilkul cut nahi honge)
+# 🔥 Bilkul Naye aur Viral Facts ki List (Jo screen par bhi likhenge aur bolenge bhi)
 VIRAL_FACTS = [
     {
-        "text": "Octopuses ke paas 3 dil aur 4 tentacle hote hain!",
+        "text": "Octopuses ke paas teen dil aur chaar tentacle hote hain!",
         "tag": "#amazingfacts #science #viralshorts",
     },
     {
@@ -64,38 +64,47 @@ VIRAL_FACTS = [
 
 
 def download_and_process_video():
-  print("Step 1: Downloading dynamic motion background video...")
-
-  # 🔥 Ek aisi video ka link jisme background mein continuous movement / animation chalegi
-  video_url = (
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
-      "ForBiggerEscapes.mp4"
-  )
-
-  try:
-    response = requests.get(video_url, stream=True)
-    with open(RAW_VIDEO, "wb") as f:
-      for chunk in response.iter_content(chunk_size=1024):
-        if chunk:
-          f.write(chunk)
-    print("✅ Motion background video downloaded successfully.")
-  except Exception as e:
-    print(f"❌ Error downloading video: {str(e)}")
-    raise e
-
-  # Step 1.5: Random Unique Fact & Voiceover
+  print("Step 1: Selecting random unique fact...")
   selected_item = random.choice(VIRAL_FACTS)
   fact_text = selected_item["text"]
   hashtag_tag = selected_item["tag"]
 
+  print("Step 1.1: Generating video background with text overlay...")
+  safe_text = (
+      fact_text.replace("'", "")
+      .replace('"', "")
+      .replace("?", "")
+      .replace("!", "")
+  )
+
+  # FFmpeg ke zariye background aur screen par text likhne ka 100% stable tarika
+  bg_cmd = [
+      "ffmpeg",
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      (
+          "color=c=0x0F172A:s=1080x1920:rate=25:duration=30,"
+          "drawtext=text='ROCHAK TATHYA':fontcolor=orange:fontsize=64:x=(w-text_w)/2:y=300,"
+          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.7:boxborderw=30:shadowx=2:shadowy=2"
+      ),
+      "-c:v",
+      "libx264",
+      "-pix_fmt",
+      "yuv420p",
+      RAW_VIDEO,
+  ]
+  subprocess.run(bg_cmd, check=True)
+  print("✅ Video background with text generated successfully.")
+
+  # Step 1.5: gTTS se clear voice generate karna
   print(f"Step 1.5: Generating Voiceover for: {fact_text}")
   tts = gTTS(text=fact_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Voice generated successfully.")
 
-  print("Step 2: Processing video, adding 9:16 layout & mixing audio...")
-
-  # FFmpeg command jo background video ko 9:16 shorts format mein banayegi aur voice mix karegi
+  print("Step 2: Mixing audio and compiling final video...")
   ffmpeg_command = [
       "ffmpeg",
       "-y",
@@ -112,9 +121,6 @@ def download_and_process_video():
       "-map",
       "1:a:0",
       "-shortest",
-      "-vf",
-      "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-      "eq=brightness=0.02:saturation=1.2",
       "-t",
       "30",
       VIDEO_PATH,
