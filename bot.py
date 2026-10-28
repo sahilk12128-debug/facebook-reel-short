@@ -14,11 +14,10 @@ FACTS_FILE = "facts.txt"
 
 
 def get_random_fact():
-  """External facts.txt file se ek random fact aur hashtag uthayega"""
+  """External facts.txt file se har baar ek bilkul naya random fact uthayega"""
   if not os.path.exists(FACTS_FILE):
-    # Agar file nahi mili toh backup fact
     return (
-        "Octopuses ke paas teen dil aur chaar tentacle hote hain!",
+        "Octopuses ke paas teen dil\naur chaar tentacle hote hain!",
         "#amazingfacts #science",
     )
 
@@ -27,7 +26,7 @@ def get_random_fact():
 
   if not lines:
     return (
-        "Duniya ka sabse anmol ratan aapka waqt hai!",
+        "Duniya ka sabse anmol ratan\naapka waqt hai!",
         "#motivation #success",
     )
 
@@ -48,10 +47,10 @@ def get_random_fact():
 def download_and_process_video():
   print("Step 1: Picking a fresh random fact from facts.txt...")
   fact_text, hashtag_tag = get_random_fact()
-
   print(f"Selected Fact: {fact_text}")
 
-  print("Step 1.1: Generating animated background with line-by-line text...")
+  print("Step 1.1: Generating clean background with line-by-line text...")
+  # Special characters hataana taaki FFmpeg me error na aaye
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -59,7 +58,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Animated Moving Gradient Background + Line-by-Line Text Overlay
+  # 🔥 Plain Professional Background + Line-by-Line Text (`\n` ki wajah se text line-by-line aayega)
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -67,10 +66,9 @@ def download_and_process_video():
       "lavfi",
       "-i",
       (
-          "testsrc=size=1080x1920:rate=25:duration=30,"
-          "geq=r='X/3+T*30':g='Y/3+T*30':b='150+sin(T)*100',"
-          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=250,"
-          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=20:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.8:boxborderw=40:shadowx=2:shadowy=2"
+          "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
+          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
+          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
       ),
       "-c:v",
       "libx264",
@@ -79,9 +77,9 @@ def download_and_process_video():
       RAW_VIDEO,
   ]
   subprocess.run(bg_cmd, check=True)
-  print("✅ Animated background & text generated successfully.")
+  print("✅ Plain background & line-by-line text generated successfully.")
 
-  # Step 1.5: gTTS se clear voice generate karna
+  # Step 1.5: gTTS se clear voice generate karna (Voice ke liye \n ko space bana denge)
   normal_voice_text = fact_text.replace("\n", " ")
   print(f"Step 1.5: Generating Voiceover for: {normal_voice_text}")
   tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
