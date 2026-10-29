@@ -50,7 +50,7 @@ def get_funny_cute_baby_story():
       {
           "text": (
               "Jab papa poochte hain:\n'Mobile kisne toda?'\n\nAur main apni ankhon"
-              " se\nmera bhai dikha دیتا hu!"
+              " se\nmera bhai dikha deta hu!"
           ),
           "caption": (
               "Mastermind baby! 🧠 Kis-kis ne bachpan mein yeh kiya hai?"
@@ -107,7 +107,10 @@ def download_and_process_video():
 
   has_image = download_baby_animation_image(query)
 
-  print("Step 1.2: Compiling video with baby animation & line-by-line text...")
+  print(
+      "Step 1.2: Compiling video with baby animation & text (No background"
+      " box)..."
+  )
   safe_text = (
       story_text.replace("'", "")
       .replace('"', "")
@@ -126,8 +129,8 @@ def download_and_process_video():
         "-vf",
         (
             "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250,"
-            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=45:shadowx=2:shadowy=2"
+            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:shadowx=2:shadowy=2"
         ),
         "-c:v",
         "libx264",
@@ -146,8 +149,8 @@ def download_and_process_video():
         "-i",
         (
             "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
-            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250,"
-            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
+            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:shadowx=2:shadowy=2"
         ),
         "-c:v",
         "libx264",
@@ -157,11 +160,11 @@ def download_and_process_video():
     ]
 
   subprocess.run(bg_cmd, check=True)
-  print("✅ Video generated successfully.")
+  print("✅ Video generated successfully without background box.")
 
-  # Step 1.5: gTTS se clear voice generate karna (Slow=False taaki fast aur natural lage)
+  # Step 1.5: Hindi Voiceover generation
   normal_voice_text = story_text.replace("\n", " ").replace("–", "")
-  print(f"Step 1.5: Generating Voiceover using gTTS...")
+  print("Step 1.5: Generating Hindi Voiceover...")
   tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
   print("✅ Voice generated successfully.")
