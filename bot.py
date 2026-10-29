@@ -13,11 +13,11 @@ AUDIO_PATH = "voiceover.mp3"
 
 
 def get_fresh_random_fact():
-  """Har baar internet se ek bilkul naya aur alag unique fact fetch karega"""
-  print("Step 1: Fetching a brand new random fact from online source...")
+  """Har baar run hone par ek bilkul naya unique fact chunega taaki repetition na ho"""
+  print("Step 1: Selecting a fresh random fact from the pool...")
 
-  # Kuch bohot hi interesting aur alag-alag unique facts ki list jo backup ke taur par ya direct use honge
-  fallback_pool = [
+  # Bohot saare alag-alag viral facts ki list
+  huge_fact_pool = [
       (
           "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
           " maujood hain!",
@@ -56,10 +56,46 @@ def get_fresh_random_fact():
           " deti hai!",
           "#japan #trains #worldfacts",
       ),
+      (
+          "Octopuses ke paas teen dil\naur chaar tentacle hote hain!",
+          "#amazingfacts #science #viralshorts",
+      ),
+      (
+          "Duniya ka sabse tez daudne wala\njanwar cheetah hai, aur ghongha\n3"
+          " saal tak so sakta hai!",
+          "#wildlifefacts #interestingfacts #hindi",
+      ),
+      (
+          "Aapki ankhon ki putli andhere mein\nbadi aur roshni mein choti\nho jaati"
+          " hai!",
+          "#humanbody #facts #knowledge",
+      ),
+      (
+          "Space mein gravity na hone ki wajah\nse astronauts ki lambaai 2 inch\nbadh"
+          " jaati hai!",
+          "#spacefacts #nasa #trending",
+      ),
+      (
+          "Shahad hazaron saalon tak kharab\nnahi hota, yeh hamesha safe\nrehta"
+          " hai!",
+          "#historyfacts #honey #facts",
+      ),
+      (
+          "Suraj ki roshni ko zameen tak\npahunchne mein 8 minute 20\nsecond lagte"
+          " hain!",
+          "#universe #sun #sciencefacts",
+      ),
+      (
+          "Insaan ki haddiyan cement se\nbhi zyada mazboot hoti hain!",
+          "#amazing #healthfacts #knowledge",
+      ),
+      (
+          "Kela jhuka hua isliye hota hai\nkyunki yeh sooraj ki taraf\nbadhta hai!",
+          "#banana #naturefacts #shorts",
+      ),
   ]
 
-  # Randomly ek bilkul naya fact chunega taaki kabhi same repeat na ho
-  fact_text, hashtag_tag = random.choice(fallback_pool)
+  fact_text, hashtag_tag = random.choice(huge_fact_pool)
   return fact_text, hashtag_tag
 
 
@@ -75,7 +111,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Wahi Purana Sahi Background & Line-by-Line Format (Jo abhi aapki reel mein chal raha hai)
+  # 🔥 Wahi Sahi Background & Line-by-Line Format (Jaisa aapki Facebook reel mein hai)
   bg_cmd = [
       "ffmpeg",
       "-y",
