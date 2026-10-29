@@ -13,145 +13,155 @@ AUDIO_PATH = "voiceover.mp3"
 BG_IMAGE_PATH = "bg_image.jpg"
 
 
-def get_fresh_anime_fact():
-  """Har baar ek naya fact aur uske hisab se anime/cinematic background image chunega"""
-  print("Step 1: Selecting a fresh unique fact...")
+def get_funny_cute_baby_story():
+  """Har baar ek naya cute baby dialogue aur uske hisab se 3D animation image prompt chunega"""
+  print("Step 1: Selecting a fresh cute baby story & prompt...")
 
-  # Facts aur unke sath matching cinematic/anime image search keywords
-  anime_facts_pool = [
+  baby_stories_pool = [
       {
           "text": (
-              "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
-              " maujood hain!"
+              "Beta, 20 rupaye do,\nswarg mil jayega! 🤲\n\n- Are Dada ji,\n20 rupaye"
+              " mein toh ice cream aati hai!"
           ),
-          "tag": "#nature #animeart #peace",
-          "query": "anime forest landscape scenery aesthetic",
-      },
-      {
-          "text": (
-              "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
-              " hai!"
+          "caption": (
+              "Bachhe ki yeh baat sunkar aapki bhi hasi nikal jayegi! 🤭 Cute"
+              " baby moments ke liye follow karein! 👇\n\n#CuteBaby #Funny"
+              " #Shorts #BabySmile #TrendingReels"
           ),
-          "tag": "#brain #deep #lofi",
-          "query": "anime starry night sky aesthetic",
+          "query": (
+              "cute 3d animated baby talking to an old grandfather on a bench"
+              " in a park, Pixar style"
+          ),
       },
       {
           "text": (
-              "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
-              " bottle ki hoti hai!"
+              "Mummi ne bola ki:\n'Jaldi so jao warna\nBhoot aa jayega!'\n\nMaine bola:"
+              " 'Bulwao use, akela bore ho raha hu!'"
           ),
-          "tag": "#facts #anime #mood",
-          "query": "anime rain city aesthetic night",
-      },
-      {
-          "text": "Duniya ka sabse purana chewing gum\n9,000 saal purana hai!",
-          "tag": "#history #ancient #aesthetic",
-          "query": "anime ancient village sunset",
-      },
-      {
-          "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
-          "tag": "#nature #insects #anime",
-          "query": "anime flower field butterfly",
+          "caption": (
+              "Aajkal ke bachhe kisi se nahi darte! 👻 Tag your fearless friends!"
+              " 👇\n\n#FunnyBaby #CuteBaby #ViralReels #Trending #BabyComedy"
+          ),
+          "query": (
+              "cute funny 3d animated baby smiling mischievously in a cozy"
+              " bedroom, Pixar style"
+          ),
       },
       {
           "text": (
-              "Chamakdar taare asal mein\nbohot door hote hain aur\nunki roshni hazaron"
-              " saal\npehle chali hoti hai!"
+              "Jab papa poochte hain:\n'Mobile kisne toda?'\n\nAur main apni ankhon"
+              " se\nmera bhai dikha deta hu!"
           ),
-          "tag": "#space #universe #lofi",
-          "query": "anime galaxy milky way night",
+          "caption": (
+              "Mastermind baby! 🧠 Kis-kis ne bachpan mein yeh kiya hai?"
+              " Comments mein batao! 👇\n\n#SmartBaby #CuteBaby #ComedyReels"
+              " #Trending #Viral"
+          ),
+          "query": (
+              "cute smart 3d animated baby pointing finger innocently, Pixar"
+              " animation style"
+          ),
       },
       {
           "text": (
-              "Octopuses ke paas teen dil\naur chaar tentacle hote hain!"
+              "Paisa ho ya na ho,\nchehre par muskan honi chahiye!\n\nAur agar jeb mein"
+              " chocolate ho,\ntoh fir kya hi chahiye!"
           ),
-          "tag": "#ocean #deepsea #facts",
-          "query": "anime underwater ocean blue aesthetic",
-      },
-      {
-          "text": (
-              "Duniya ka sabse tez daudne wala\njanwar cheetah hai, aur ghongha\n3"
-              " saal tak so sakta hai!"
+          "caption": (
+              "Pyar aur muskan hamesha bani rahe! ❤️ Video pasand aaye toh share"
+              " zaroor karein! 👇\n\n#CuteBaby #BabySmile #Happiness #Trending"
+              " #Reels"
           ),
-          "tag": "#wildlife #anime #forest",
-          "query": "anime green forest peaceful morning",
+          "query": (
+              "cute happy 3d animated baby holding a chocolate and smiling"
+              " joyfully, Pixar style"
+          ),
       },
   ]
 
-  chosen = random.choice(anime_facts_pool)
-  return chosen["text"], chosen["tag"], chosen["query"]
+  chosen = random.choice(baby_stories_pool)
+  return chosen["text"], chosen["caption"], chosen["query"]
 
 
-def download_anime_background(query):
-  """Fact ke topic par ek sundar Anime/Cinematic image download karega"""
-  print(f"Step 1.1: Generating cinematic anime background for query: {query}")
+def download_baby_animation_image(query):
+  """Cute 3D animated baby ki image download karega"""
+  print(f"Step 1.1: Generating 3D baby animation image for query: {query}")
   image_url = f"https://image.pollinations.ai/prompt/{query.replace(' ', '%20')}?width=1080&height=1920&nologo=true"
-  
+
   try:
     response = requests.get(image_url, timeout=15)
     if response.status_code == 200:
       with open(BG_IMAGE_PATH, "wb") as f:
         f.write(response.content)
-      print("✅ Cinematic Anime background image downloaded successfully.")
+      print("✅ Cute baby animation image downloaded successfully.")
       return True
   except Exception as e:
     print(f"⚠️ Error downloading image: {e}")
-  
+
   return False
 
 
 def download_and_process_video():
-  fact_text, hashtag_tag, query = get_fresh_anime_fact()
-  print(f"Selected Fact: {fact_text}")
+  story_text, viral_caption, query = get_funny_cute_baby_story()
+  print(f"Selected Baby Story: {story_text}")
 
-  has_image = download_anime_background(query)
+  has_image = download_baby_animation_image(query)
 
-  print("Step 1.2: Compiling video with anime background & line-by-line text...")
+  print("Step 1.2: Compiling video with baby animation & line-by-line text...")
   safe_text = (
-      fact_text.replace("'", "")
+      story_text.replace("'", "")
       .replace('"', "")
       .replace("?", "")
       .replace("!", "")
   )
 
   if has_image and os.path.exists(BG_IMAGE_PATH):
-    # 🔥 Cinematic Anime Background Image + Line-by-Line Text Overlay
+    # 🔥 Cute 3D Baby Image + Line-by-Line Text Overlay
     bg_cmd = [
         "ffmpeg",
         "-y",
-        "-loop", "1",
-        "-i", BG_IMAGE_PATH,
-        "-vf", (
+        "-loop",
+        "1",
+        "-i",
+        BG_IMAGE_PATH,
+        "-vf",
+        (
             "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
-            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=45:shadowx=2:shadowy=2"
+            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=45:shadowx=2:shadowy=2"
         ),
-        "-c:v", "libx264",
-        "-t", "30",
-        "-pix_fmt", "yuv420p",
+        "-c:v",
+        "libx264",
+        "-t",
+        "30",
+        "-pix_fmt",
+        "yuv420p",
         RAW_VIDEO,
     ]
   else:
-    # Fallback solid dark theme agar image download na ho
     bg_cmd = [
         "ffmpeg",
         "-y",
-        "-f", "lavfi",
-        "-i", (
+        "-f",
+        "lavfi",
+        "-i",
+        (
             "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
-            "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
-            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
+            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
         ),
-        "-c:v", "libx264",
-        "-pix_fmt", "yuv420p",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
         RAW_VIDEO,
     ]
 
   subprocess.run(bg_cmd, check=True)
-  print("✅ Video background & text generated successfully.")
+  print("✅ Video generated successfully.")
 
   # Step 1.5: gTTS se clear voice generate karna
-  normal_voice_text = fact_text.replace("\n", " ")
+  normal_voice_text = story_text.replace("\n", " ").replace("–", "")
   print(f"Step 1.5: Generating Voiceover for: {normal_voice_text}")
   tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
   tts.save(AUDIO_PATH)
@@ -161,20 +171,27 @@ def download_and_process_video():
   ffmpeg_command = [
       "ffmpeg",
       "-y",
-      "-i", RAW_VIDEO,
-      "-i", AUDIO_PATH,
-      "-c:v", "libx264",
-      "-c:a", "aac",
-      "-map", "0:v:0",
-      "-map", "1:a:0",
+      "-i",
+      RAW_VIDEO,
+      "-i",
+      AUDIO_PATH,
+      "-c:v",
+      "libx264",
+      "-c:a",
+      "aac",
+      "-map",
+      "0:v:0",
+      "-map",
+      "1:a:0",
       "-shortest",
-      "-t", "30",
+      "-t",
+      "30",
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
-  print("✅ Video processed and compiled successfully.")
+  print("✅ Video compiled successfully.")
 
-  return normal_voice_text + " " + hashtag_tag
+  return viral_caption
 
 
 def upload_to_facebook(caption):
@@ -237,5 +254,5 @@ def upload_to_facebook(caption):
 
 
 if __name__ == "__main__":
-  dynamic_caption = download_and_process_video()
-  upload_to_facebook(dynamic_caption)
+  viral_caption = download_and_process_video()
+  upload_to_facebook(viral_caption)
