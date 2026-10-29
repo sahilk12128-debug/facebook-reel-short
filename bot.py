@@ -12,98 +12,112 @@ RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 
 
-def get_fresh_random_fact():
-  """Har baar run hone par ek bilkul naya unique fact chunega taaki repetition na ho"""
-  print("Step 1: Selecting a fresh random fact from the pool...")
+def get_smart_themed_fact():
+  """Fact ke topic ke hisab se uska matching background theme aur text select karega"""
+  print("Step 1: Selecting a fact with matching topic background theme...")
 
-  # Bohot saare alag-alag viral facts ki list
-  huge_fact_pool = [
-      (
-          "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
-          " maujood hain!",
-          "#nature #facts #earth",
-      ),
-      (
-          "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
-          " hai!",
-          "#brain #psychology #knowledge",
-      ),
-      (
-          "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
-          " bottle ki hoti hai!",
-          "#didyouknow #facts #water",
-      ),
-      (
-          "Duniya ka sabse purana chewing gum\n9,000 saal purana hai!",
-          "#history #ancient #facts",
-      ),
-      (
-          "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
-          "#animals #insects #sciencefacts",
-      ),
-      (
-          "Aapki naak 1 kharab se bhi\nzyada alag-alag khusboo ko\npehchaan sakti"
-          " hai!",
-          "#humanbody #science #facts",
-      ),
-      (
-          "Chamakdar taare asal mein\nbohot door hote hain aur\nunki roshni hazaron"
-          " saal\npehle chali hoti hai!",
-          "#space #astronomy #universe",
-      ),
-      (
-          "Japan mein train late hone par\ncompany yatriyon ko official\nmaafinama"
-          " deti hai!",
-          "#japan #trains #worldfacts",
-      ),
-      (
-          "Octopuses ke paas teen dil\naur chaar tentacle hote hain!",
-          "#amazingfacts #science #viralshorts",
-      ),
-      (
-          "Duniya ka sabse tez daudne wala\njanwar cheetah hai, aur ghongha\n3"
-          " saal tak so sakta hai!",
-          "#wildlifefacts #interestingfacts #hindi",
-      ),
-      (
-          "Aapki ankhon ki putli andhere mein\nbadi aur roshni mein choti\nho jaati"
-          " hai!",
-          "#humanbody #facts #knowledge",
-      ),
-      (
-          "Space mein gravity na hone ki wajah\nse astronauts ki lambaai 2 inch\nbadh"
-          " jaati hai!",
-          "#spacefacts #nasa #trending",
-      ),
-      (
-          "Shahad hazaron saalon tak kharab\nnahi hota, yeh hamesha safe\nrehta"
-          " hai!",
-          "#historyfacts #honey #facts",
-      ),
-      (
-          "Suraj ki roshni ko zameen tak\npahunchne mein 8 minute 20\nsecond lagte"
-          " hain!",
-          "#universe #sun #sciencefacts",
-      ),
-      (
-          "Insaan ki haddiyan cement se\nbhi zyada mazboot hoti hain!",
-          "#amazing #healthfacts #knowledge",
-      ),
-      (
-          "Kela jhuka hua isliye hota hai\nkyunki yeh sooraj ki taraf\nbadhta hai!",
-          "#banana #naturefacts #shorts",
-      ),
+  # 🔥 Har fact ke sath uska topic-matching background color set hai
+  themed_facts_pool = [
+      {
+          "text": (
+              "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
+              " maujood hain!"
+          ),
+          "tag": "#nature #facts #earth",
+          "bg": "0x0B2215",
+      },  # Dark Forest Green (Nature theme)
+      {
+          "text": (
+              "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
+              " hai!"
+          ),
+          "tag": "#brain #psychology #knowledge",
+          "bg": "0x1A1145",
+      },  # Deep Purple (Mind & Psychology theme)
+      {
+          "text": (
+              "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
+              " bottle ki hoti hai!"
+          ),
+          "tag": "#didyouknow #facts #water",
+          "bg": "0x0B1D3A",
+      },  # Ocean Blue (Water theme)
+      {
+          "text": "Duniya ka sabse purana chewing gum\n9,000 saal purana hai!",
+          "tag": "#history #ancient #facts",
+          "bg": "0x3A1F0B",
+      },  # Ancient Bronze / Brown theme
+      {
+          "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
+          "tag": "#animals #insects #sciencefacts",
+          "bg": "0x330B3A",
+      },  # Vibrant Magenta (Wildlife theme)
+      {
+          "text": (
+              "Aapki naak 1 kharab se bhi\nzyada alag-alag khusboo ko\npehchaan sakti"
+              " hai!"
+          ),
+          "tag": "#humanbody #science #facts",
+          "bg": "0x2D150B",
+      },  # Warm Earthy theme
+      {
+          "text": (
+              "Chamakdar taare asal mein\nbohot door hote hain aur\nunki roshni hazaron"
+              " saal\npehle chali hoti hai!"
+          ),
+          "tag": "#space #astronomy #universe",
+          "bg": "0x050814",
+      },  # Deep Space Midnight Blue theme
+      {
+          "text": (
+              "Japan mein train late hone par\ncompany yatriyon ko official\nmaafinama"
+              " deti hai!"
+          ),
+          "tag": "#japan #trains #worldfacts",
+          "bg": "0x3A0B0B",
+      },  # Crimson Red theme
+      {
+          "text": (
+              "Octopuses ke paas teen dil\naur chaar tentacle hote hain!"
+          ),
+          "tag": "#amazingfacts #science #viralshorts",
+          "bg": "0x0B2A3A",
+      },  # Deep Sea Teal theme
+      {
+          "text": (
+              "Duniya ka sabse tez daudne wala\njanwar cheetah hai, aur ghongha\n3"
+              " saal tak so sakta hai!"
+          ),
+          "tag": "#wildlifefacts #interestingfacts #hindi",
+          "bg": "0x2E2A0B",
+      },  # Safari Gold / Wildlife theme
+      {
+          "text": (
+              "Space mein gravity na hone ki wajah\nse astronauts ki lambaai 2 inch"
+              " badh jaati hai!"
+          ),
+          "tag": "#spacefacts #nasa #trending",
+          "bg": "0x0F051D",
+      },  # Cosmic Space theme
+      {
+          "text": (
+              "Shahad hazaron saalon tak kharab\nnahi hota, yeh hamesha safe\nrehta"
+              " hai!"
+          ),
+          "tag": "#historyfacts #honey #facts",
+          "bg": "0x3A2E0B",
+      },  # Golden Honey theme
   ]
 
-  fact_text, hashtag_tag = random.choice(huge_fact_pool)
-  return fact_text, hashtag_tag
+  chosen = random.choice(themed_facts_pool)
+  return chosen["text"], chosen["tag"], chosen["bg"]
 
 
 def download_and_process_video():
-  fact_text, hashtag_tag = get_fresh_random_fact()
-  print(f"Selected Unique Fact: {fact_text}")
+  fact_text, hashtag_tag, bg_color = get_smart_themed_fact()
+  print(f"Selected Fact: {fact_text} | Theme Background: {bg_color}")
 
-  print("Step 1.1: Generating clean background with line-by-line text...")
+  print("Step 1.1: Generating topic-matched themed background & text...")
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -111,7 +125,7 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Wahi Sahi Background & Line-by-Line Format (Jaisa aapki Facebook reel mein hai)
+  # 🔥 Smart Themed Background (Fact ke hisab se color badlega) + Line-by-Line Text Layout
   bg_cmd = [
       "ffmpeg",
       "-y",
@@ -119,7 +133,7 @@ def download_and_process_video():
       "lavfi",
       "-i",
       (
-          "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
+          f"color=c={bg_color}:s=1080x1920:rate=25:duration=30,"
           "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
           f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
       ),
@@ -130,7 +144,7 @@ def download_and_process_video():
       RAW_VIDEO,
   ]
   subprocess.run(bg_cmd, check=True)
-  print("✅ Background & line-by-line text generated successfully.")
+  print("✅ Themed background & text generated successfully.")
 
   # Step 1.5: gTTS se clear voice generate karna
   normal_voice_text = fact_text.replace("\n", " ")
