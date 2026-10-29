@@ -2,22 +2,22 @@ import os
 import random
 import subprocess
 import requests
+import pyttsx3
 
 # आपकी Facebook Page आईडी और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
-AUDIO_PATH = "voiceover.mp3"
+AUDIO_PATH = "voiceover.wav"  # pyttsx3 .wav format save karta hai
 BG_IMAGE_PATH = "bg_image.jpg"
 
 
 def get_random_unique_content():
-  """Har baar ek bilkul nayi aur alag funny ya fact video chunega taaki repeat na ho"""
+  """Har baar ek bilkul nayi aur alag funny ya fact video chunega"""
   print("Step 1: Selecting fresh unique content (Funny & Facts mix)...")
 
   master_pool = [
-      # --- Category 1: Funny Baby Stories ---
       {
           "text": (
               "Beta, 20 rupaye do,\nswarg mil jayega!\n\nAre Dada ji,\n20 rupaye"
@@ -49,22 +49,6 @@ def get_random_unique_content():
       },
       {
           "text": (
-              "Jab papa poochte hain:\nMobile kisne toda?\n\nAur main apni ankhon"
-              " se\nmera bhai dikha deta hu!"
-          ),
-          "caption": (
-              "Mastermind baby! 🧠 Kis-kis ne bachpan mein yeh kiya hai?"
-              " Comments mein batao! 👇\n\n#SmartBaby #CuteBaby #ComedyReels"
-              " #Trending #Viral"
-          ),
-          "query": (
-              "cute smart 3d animated baby pointing finger innocently, Pixar"
-              " animation style"
-          ),
-      },
-      # --- Category 2: Amazing Facts & Knowledge ---
-      {
-          "text": (
               "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
               " maujood hain!"
           ),
@@ -87,27 +71,6 @@ def get_random_unique_content():
           ),
           "query": "anime starry night sky aesthetic lofi, galaxy stars",
       },
-      {
-          "text": (
-              "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
-              " bottle ki hoti hai!"
-          ),
-          "caption": (
-              "Yeh sach jaan kar aap bhi chaunk gaye na? 💧 Kitne logo ko yeh"
-              " galatfahmi thi? Video ko share karo! 👇\n\n#Water"
-              " #FactsThatBlowYourMind #ViralVideo #Trending"
-          ),
-          "query": "anime rain city aesthetic night, neon lights reflection",
-      },
-      {
-          "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
-          "caption": (
-              "Kudrat ke raaz hairan karne wale hain! 🦋 Aise hi aur rochak tathya"
-              " roz dekhne ke liye follow karein! 👇\n\n#Insects #NatureFacts"
-              " #Viral #Trending #FactsDaily"
-          ),
-          "query": "anime flower field butterfly sunny day aesthetic",
-      },
   ]
 
   chosen = random.choice(master_pool)
@@ -115,7 +78,6 @@ def get_random_unique_content():
 
 
 def download_background_image(query):
-  """Topic ke hisab se cinematic background image download karega"""
   print(f"Step 1.1: Generating background image for query: {query}")
   image_url = f"https://image.pollinations.ai/prompt/{query.replace(' ', '%20')}?width=1080&height=1920&nologo=true"
 
@@ -128,30 +90,27 @@ def download_background_image(query):
       return True
   except Exception as e:
     print(f"⚠️ Error downloading image: {e}")
-
   return False
 
 
-def generate_hindi_voice(text):
-  """Hindi mein voice generate karega"""
-  print("Step 1.5: Generating Hindi Voiceover...")
+def generate_hindi_male_voice(text):
+  """pyttsx3 ka use karke Linux server par Male voice generate karega"""
+  print("Step 1.5: Generating Hindi Male Voiceover using pyttsx3...")
   clean_text = text.replace("\n", " ").replace("–", "")
 
-  tts_url = "https://translate.google.com/translate_tts"
-  params = {"ie": "UTF-8", "q": clean_text, "tl": "hi", "client": "tw-ob"}
+  engine = pyttsx3.init()
+  engine.setProperty("rate", 145)  # Aawaz ki speed normal aur clear rakhne ke liye
 
-  try:
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(tts_url, params=params, headers=headers, timeout=15)
-    if response.status_code == 200:
-      with open(AUDIO_PATH, "wb") as f:
-        f.write(response.content)
-      print("✅ Hindi Voice generated successfully.")
-      return True
-  except Exception as e:
-    print(f"⚠️ Error generating voice: {e}")
+  # Linux eSpeak engine par Hindi/Male voice set karna
+  voices = engine.getProperty("voices")
+  for voice in voices:
+    if "hindi" in voice.id.lower() or "hi" in voice.id.lower():
+      engine.setProperty("voice", voice.id)
+      break
 
-  return False
+  engine.save_to_file(clean_text, AUDIO_PATH)
+  engine.runAndWait()
+  print("✅ Hindi Male Voice generated successfully.")
 
 
 def download_and_process_video():
@@ -159,13 +118,12 @@ def download_and_process_video():
   print(f"Selected Content: {story_text}")
 
   has_image = download_background_image(query)
-  generate_hindi_voice(story_text)
+  generate_hindi_male_voice(story_text)
 
   print(
       "Step 1.2: Compiling video with clean text (No background box, shadow"
       " enabled)..."
   )
-  # FFmpeg ke drawtext ke liye colons aur quotes ko safe karna
   safe_text = (
       story_text.replace("'", "")
       .replace('"', "")
@@ -218,7 +176,7 @@ def download_and_process_video():
   subprocess.run(bg_cmd, check=True)
   print("✅ Video generated successfully.")
 
-  print("Step 2: Mixing audio and compiling final video...")
+  print("Step 2: Mixing audio (.wav) and compiling final video...")
   ffmpeg_command = [
       "ffmpeg",
       "-y",
