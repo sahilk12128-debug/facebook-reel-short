@@ -11,49 +11,186 @@ VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 BG_IMAGE_PATH = "bg_image.jpg"
-POOL_FILE = "master_pool.json"
-HISTORY_FILE = "used_stories.txt"
 
 
-def get_non_repeating_content():
-  print("Step 1: Loading unique content pool & checking history...")
+def get_massive_mixed_content():
+  """Unlimited Funny, Facts, Knowledge aur Stories ka Massive Master Pool"""
+  print("Step 1: Selecting from massive non-repeating content pool...")
 
-  if os.path.exists(POOL_FILE):
-    with open(POOL_FILE, "r", encoding="utf-8") as f:
-      master_pool = json.load(f)
-  else:
-    master_pool = [{
-        "text": (
-            "Insan ka dil ek din mein\nlagbhag 1 lakh baar dhadakta hai!"
-        ),
-        "caption": "Amazing body facts! 👇 #Facts",
-        "query": "science aesthetic background",
-    }]
-
-  # Load history of used texts
-  used_texts = set()
-  if os.path.exists(HISTORY_FILE):
-    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-      used_texts = set(line.strip() for line in f.readlines())
-
-  # Filter available unused items
-  available_pool = [
-      item for item in master_pool if item["text"] not in used_texts
+  master_pool = [
+      # --- Category 1: Funny & Comedy ---
+      {
+          "text": (
+              "Samosa khane se dimaag tez hota hai!\n\n- Arre nahi bhai, yeh toh"
+              " sirf pet bharne ka bahana hai!"
+          ),
+          "caption": (
+              "Samosa lovers kahan hain? 🥟 Tag your foodie friend! 👇\n\n"
+              "#Samosa #Foodie #Comedy #ViralReels #Trending"
+          ),
+          "query": (
+              "cute funny 3d animated character eating samosa happily, Pixar"
+              " style"
+          ),
+      },
+      {
+          "text": (
+              "Teacher ne poochha: 'Homer ki death kaise hui thi?'\n\nStudent"
+              " bola: 'Sir, use geography ki padhai karte waqt heart attack aa"
+              " gaya tha!'"
+          ),
+          "caption": (
+              "Exam ke ajeeb jawab! 😂 Kis-kis ne paper mein aisi comedy ki hai?"
+              " 👇\n\n#SchoolLife #ExamFunny #ComedyReels #Trending"
+          ),
+          "query": (
+              "cute funny 3d animated student scratching head in classroom, Pixar"
+              " style"
+          ),
+      },
+      {
+          "text": (
+              "Mummi ne bola ki: Jaldi so jao warna Bhoot aa jayega!\n\nMaine"
+              " bola: Bulwao use, akela bore ho raha hu!"
+          ),
+          "caption": (
+              "Aajkal ke bachhe kisi se nahi darte! 👻 Tag your fearless friends!"
+              " 👇\n\n#FunnyBaby #CuteBaby #ViralReels #Trending"
+          ),
+          "query": (
+              "cute funny 3d animated baby smiling mischievously in a cozy"
+              " bedroom, Pixar style"
+          ),
+      },
+      {
+          "text": (
+              "Jab papa poochte hain: Mobile kisne toda?\n\nAur main apni ankhon"
+              " se mera bhai dikha deta hu!"
+          ),
+          "caption": (
+              "Mastermind baby! 🧠 Kis-kis ne bachpan mein yeh kiya hai?"
+              " Comments mein batao! 👇\n\n#SmartBaby #CuteBaby #ComedyReels"
+          ),
+          "query": (
+              "cute smart 3d animated baby pointing finger innocently, Pixar"
+              " animation style"
+          ),
+      },
+      # --- Category 2: Amazing Facts & Science ---
+      {
+          "text": (
+              "Duniya ka sabse pehla camera itna slow tha ki\nphoto khinchane ke"
+              " liye 8 ghante baithna padta tha!"
+          ),
+          "caption": (
+              "Pehle ke zamane ka photography struggle! 📸 Kya aapko yeh ajeeb"
+              " fact pata tha? 👇\n\n#HistoryFacts #Camera #DidYouKnow"
+              " #ViralReels"
+          ),
+          "query": "vintage old camera retro style aesthetic photography",
+      },
+      {
+          "text": (
+              "Mars (Mangal Grah) par sunsets\nneele (blue) rang ke dikhai dete"
+              " hain!"
+          ),
+          "caption": (
+              "Space ke kitne saare raaz abhi baaki hain! 🪐 Space lovers video"
+              " ko share karein! 👇\n\n#Space #Mars #AstronomyFacts #ViralVideo"
+          ),
+          "query": "anime space mars sunset blue landscape sci fi aesthetic",
+      },
+      {
+          "text": (
+              "Penguin ke paas namkeen paani peene ke liye\nek special gland hota"
+              " hai jo namak ko bahar nikal deta hai!"
+          ),
+          "caption": (
+              "Nature ke ajeeb aur khubsurat raaz! 🐧 Aise hi facts roz dekhne"
+              " ke liye follow karein! 👇\n\n#Animals #Penguin #NatureFacts"
+              " #Trending"
+          ),
+          "query": "cute penguins in snow ice aesthetic winter anime background",
+      },
+      {
+          "text": (
+              "Billiyaan (Cats) apni poori zindagi ka\n70 percent hissa sone"
+              " mein hi bita deti hain!"
+          ),
+          "caption": (
+              "Alsi billi! 🐱 Tag your sleeping buddy who loves to sleep all"
+              " day! 👇\n\n#Cats #PetLovers #FunnyAnimals #ViralReels"
+          ),
+          "query": "cute sleeping cat cozy room aesthetic lofi anime style",
+      },
+      {
+          "text": (
+              "Agar aap chand par apna jhanda lagayein,\ntoh woh wahan hazaron"
+              " saal tak waisa hi rahega kyunki wahan hawa hi nahi hai!"
+          ),
+          "caption": (
+              "Space ki ek aur dilchasp baat! 🌙 Apne doston ko tag karo! 👇\n\n"
+              "#Moon #SpaceFacts #Universe #TrendingReels"
+          ),
+          "query": (
+              "anime moon night glowing aesthetic beautiful space background"
+          ),
+      },
+      {
+          "text": (
+              "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
+              " maujood hain!"
+          ),
+          "caption": (
+              "Kya aapko yeh baat pata thi? 🌳 Nature hamari soch se kahin zyada"
+              " khubsurat hai! 👇\n\n#NatureLovers #Facts #ViralReels #Trending"
+          ),
+          "query": "anime forest landscape scenery aesthetic, beautiful nature",
+      },
+      {
+          "text": (
+              "Pani ki bottle par jo expiry date hoti hai\nwoh pani ki nahi,"
+              " balki bottle ki hoti hai!"
+          ),
+          "caption": (
+              "Yeh sach jaan kar aap bhi chaunk gaye na? 💧 Video ko share karo!"
+              " 👇\n\n#Water #FactsThatBlowYourMind #ViralVideo"
+          ),
+          "query": "anime rain city aesthetic night, neon lights reflection",
+      },
+      {
+          "text": (
+              "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!"
+          ),
+          "caption": (
+              "Kudrat ke raaz hairan karne wale hain! 🦋 Follow karein! 👇\n\n"
+              "#Insects #NatureFacts #Viral #Trending"
+          ),
+          "query": "anime flower field butterfly sunny day aesthetic",
+      },
+      {
+          "text": "Insan ki ankhon ka lens\n576 megapixels ka hota hai!",
+          "caption": (
+              "Kudrat ka sabse behtareen camera! 👁️ Is amazing fact ke liye"
+              " like banta hai! 👇\n\n#HumanBody #ScienceFacts #Vision #Trending"
+          ),
+          "query": "anime futuristic glowing human eye cyber aesthetic",
+      },
+      {
+          "text": (
+              "Banana (Kela) aisi fruit hai\njo curve hoti hai kyunki woh suraj"
+              " ki taraf ugti hai!"
+          ),
+          "caption": (
+              "Physics aur nature ka kamaal! 🍌 Kya aapko yeh fact pata tha? 👇\n\n"
+              "#Banana #ScienceFacts #DidYouKnow #Viral"
+          ),
+          "query": "anime tropical bright sunny banana tree aesthetic background",
+      },
   ]
 
-  # Agar saari items use ho chuki hain, toh history reset kar do
-  if not available_pool:
-    print("🔄 All items used. Resetting history for fresh rotation...")
-    if os.path.exists(HISTORY_FILE):
-      os.remove(HISTORY_FILE)
-    available_pool = master_pool
-
-  chosen = random.choice(available_pool)
-
-  # Save chosen text to history
-  with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-    f.write(chosen["text"] + "\n")
-
+  chosen = random.choice(master_pool)
+  print(f"✅ Selected Fresh Content: {chosen['text'][:30]}...")
   return chosen["text"], chosen["caption"], chosen["query"]
 
 
@@ -90,13 +227,12 @@ def generate_hindi_voice(text):
 
 
 def download_and_process_video():
-  story_text, viral_caption, query = get_non_repeating_content()
-  print(f"Selected Content: {story_text}")
+  story_text, viral_caption, query = get_massive_mixed_content()
 
   has_image = download_background_image(query)
   generate_hindi_voice(story_text)
 
-  print("Step 1.2: Compiling video with clean text (Shadow enabled)...")
+  print("Step 1.2: Compiling video with clean text...")
   safe_text = (
       story_text.replace("'", "")
       .replace('"', "")
