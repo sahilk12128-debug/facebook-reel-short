@@ -20,7 +20,7 @@ def get_random_unique_content():
       # --- Category 1: Funny Baby Stories ---
       {
           "text": (
-              "Beta, 20 rupaye do,\nswarg mil jayega! 🤲\n\n- Are Dada ji,\n20 rupaye"
+              "Beta, 20 rupaye do,\nswarg mil jayega!\n\nAre Dada ji,\n20 rupaye"
               " mein toh ice cream aati hai!"
           ),
           "caption": (
@@ -35,8 +35,8 @@ def get_random_unique_content():
       },
       {
           "text": (
-              "Mummi ne bola ki:\n'Jaldi so jao warna\nBhoot aa jayega!'\n\nMaine bola:"
-              " 'Bulwao use, akela bore ho raha hu!'"
+              "Mummi ne bola ki:\nJaldi so jao warna\nBhoot aa jayega!\n\nMaine bola:"
+              " Bulwao use, akela bore ho raha hu!"
           ),
           "caption": (
               "Aajkal ke bachhe kisi se nahi darte! 👻 Tag your fearless friends!"
@@ -49,7 +49,7 @@ def get_random_unique_content():
       },
       {
           "text": (
-              "Jab papa poochte hain:\n'Mobile kisne toda?'\n\nAur main apni ankhon"
+              "Jab papa poochte hain:\nMobile kisne toda?\n\nAur main apni ankhon"
               " se\nmera bhai dikha deta hu!"
           ),
           "caption": (
@@ -132,7 +132,7 @@ def download_background_image(query):
   return False
 
 
-def generate_hindi_male_voice(text):
+def generate_hindi_voice(text):
   """Hindi mein voice generate karega"""
   print("Step 1.5: Generating Hindi Voiceover...")
   clean_text = text.replace("\n", " ").replace("–", "")
@@ -159,15 +159,17 @@ def download_and_process_video():
   print(f"Selected Content: {story_text}")
 
   has_image = download_background_image(query)
-  generate_hindi_male_voice(story_text)
+  generate_hindi_voice(story_text)
 
   print(
       "Step 1.2: Compiling video with clean text (No background box, shadow"
       " enabled)..."
   )
+  # FFmpeg ke drawtext ke liye colons aur quotes ko safe karna
   safe_text = (
       story_text.replace("'", "")
       .replace('"', "")
+      .replace(":", " -")
       .replace("?", "")
       .replace("!", "")
   )
