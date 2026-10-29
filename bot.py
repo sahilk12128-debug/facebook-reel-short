@@ -10,114 +10,103 @@ FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
+BG_IMAGE_PATH = "bg_image.jpg"
 
 
-def get_smart_themed_fact():
-  """Fact ke topic ke hisab se uska matching background theme aur text select karega"""
-  print("Step 1: Selecting a fact with matching topic background theme...")
+def get_fresh_anime_fact():
+  """Har baar ek naya fact aur uske hisab se anime/cinematic background image chunega"""
+  print("Step 1: Selecting a fresh unique fact...")
 
-  # 🔥 Har fact ke sath uska topic-matching background color set hai
-  themed_facts_pool = [
+  # Facts aur unke sath matching cinematic/anime image search keywords
+  anime_facts_pool = [
       {
           "text": (
               "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
               " maujood hain!"
           ),
-          "tag": "#nature #facts #earth",
-          "bg": "0x0B2215",
-      },  # Dark Forest Green (Nature theme)
+          "tag": "#nature #animeart #peace",
+          "query": "anime forest landscape scenery aesthetic",
+      },
       {
           "text": (
               "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
               " hai!"
           ),
-          "tag": "#brain #psychology #knowledge",
-          "bg": "0x1A1145",
-      },  # Deep Purple (Mind & Psychology theme)
+          "tag": "#brain #deep #lofi",
+          "query": "anime starry night sky aesthetic",
+      },
       {
           "text": (
               "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
               " bottle ki hoti hai!"
           ),
-          "tag": "#didyouknow #facts #water",
-          "bg": "0x0B1D3A",
-      },  # Ocean Blue (Water theme)
+          "tag": "#facts #anime #mood",
+          "query": "anime rain city aesthetic night",
+      },
       {
           "text": "Duniya ka sabse purana chewing gum\n9,000 saal purana hai!",
-          "tag": "#history #ancient #facts",
-          "bg": "0x3A1F0B",
-      },  # Ancient Bronze / Brown theme
+          "tag": "#history #ancient #aesthetic",
+          "query": "anime ancient village sunset",
+      },
       {
           "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
-          "tag": "#animals #insects #sciencefacts",
-          "bg": "0x330B3A",
-      },  # Vibrant Magenta (Wildlife theme)
-      {
-          "text": (
-              "Aapki naak 1 kharab se bhi\nzyada alag-alag khusboo ko\npehchaan sakti"
-              " hai!"
-          ),
-          "tag": "#humanbody #science #facts",
-          "bg": "0x2D150B",
-      },  # Warm Earthy theme
+          "tag": "#nature #insects #anime",
+          "query": "anime flower field butterfly",
+      },
       {
           "text": (
               "Chamakdar taare asal mein\nbohot door hote hain aur\nunki roshni hazaron"
               " saal\npehle chali hoti hai!"
           ),
-          "tag": "#space #astronomy #universe",
-          "bg": "0x050814",
-      },  # Deep Space Midnight Blue theme
-      {
-          "text": (
-              "Japan mein train late hone par\ncompany yatriyon ko official\nmaafinama"
-              " deti hai!"
-          ),
-          "tag": "#japan #trains #worldfacts",
-          "bg": "0x3A0B0B",
-      },  # Crimson Red theme
+          "tag": "#space #universe #lofi",
+          "query": "anime galaxy milky way night",
+      },
       {
           "text": (
               "Octopuses ke paas teen dil\naur chaar tentacle hote hain!"
           ),
-          "tag": "#amazingfacts #science #viralshorts",
-          "bg": "0x0B2A3A",
-      },  # Deep Sea Teal theme
+          "tag": "#ocean #deepsea #facts",
+          "query": "anime underwater ocean blue aesthetic",
+      },
       {
           "text": (
               "Duniya ka sabse tez daudne wala\njanwar cheetah hai, aur ghongha\n3"
               " saal tak so sakta hai!"
           ),
-          "tag": "#wildlifefacts #interestingfacts #hindi",
-          "bg": "0x2E2A0B",
-      },  # Safari Gold / Wildlife theme
-      {
-          "text": (
-              "Space mein gravity na hone ki wajah\nse astronauts ki lambaai 2 inch"
-              " badh jaati hai!"
-          ),
-          "tag": "#spacefacts #nasa #trending",
-          "bg": "0x0F051D",
-      },  # Cosmic Space theme
-      {
-          "text": (
-              "Shahad hazaron saalon tak kharab\nnahi hota, yeh hamesha safe\nrehta"
-              " hai!"
-          ),
-          "tag": "#historyfacts #honey #facts",
-          "bg": "0x3A2E0B",
-      },  # Golden Honey theme
+          "tag": "#wildlife #anime #forest",
+          "query": "anime green forest peaceful morning",
+      },
   ]
 
-  chosen = random.choice(themed_facts_pool)
-  return chosen["text"], chosen["tag"], chosen["bg"]
+  chosen = random.choice(anime_facts_pool)
+  return chosen["text"], chosen["tag"], chosen["query"]
+
+
+def download_anime_background(query):
+  """Fact ke topic par ek sundar Anime/Cinematic image download karega"""
+  print(f"Step 1.1: Generating cinematic anime background for query: {query}")
+  image_url = f"https://image.pollinations.ai/prompt/{query.replace(' ', '%20')}?width=1080&height=1920&nologo=true"
+  
+  try:
+    response = requests.get(image_url, timeout=15)
+    if response.status_code == 200:
+      with open(BG_IMAGE_PATH, "wb") as f:
+        f.write(response.content)
+      print("✅ Cinematic Anime background image downloaded successfully.")
+      return True
+  except Exception as e:
+    print(f"⚠️ Error downloading image: {e}")
+  
+  return False
 
 
 def download_and_process_video():
-  fact_text, hashtag_tag, bg_color = get_smart_themed_fact()
-  print(f"Selected Fact: {fact_text} | Theme Background: {bg_color}")
+  fact_text, hashtag_tag, query = get_fresh_anime_fact()
+  print(f"Selected Fact: {fact_text}")
 
-  print("Step 1.1: Generating topic-matched themed background & text...")
+  has_image = download_anime_background(query)
+
+  print("Step 1.2: Compiling video with anime background & line-by-line text...")
   safe_text = (
       fact_text.replace("'", "")
       .replace('"', "")
@@ -125,26 +114,41 @@ def download_and_process_video():
       .replace("!", "")
   )
 
-  # 🔥 Smart Themed Background (Fact ke hisab se color badlega) + Line-by-Line Text Layout
-  bg_cmd = [
-      "ffmpeg",
-      "-y",
-      "-f",
-      "lavfi",
-      "-i",
-      (
-          f"color=c={bg_color}:s=1080x1920:rate=25:duration=30,"
-          "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
-          f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
-      ),
-      "-c:v",
-      "libx264",
-      "-pix_fmt",
-      "yuv420p",
-      RAW_VIDEO,
-  ]
+  if has_image and os.path.exists(BG_IMAGE_PATH):
+    # 🔥 Cinematic Anime Background Image + Line-by-Line Text Overlay
+    bg_cmd = [
+        "ffmpeg",
+        "-y",
+        "-loop", "1",
+        "-i", BG_IMAGE_PATH,
+        "-vf", (
+            "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+            "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.75:boxborderw=45:shadowx=2:shadowy=2"
+        ),
+        "-c:v", "libx264",
+        "-t", "30",
+        "-pix_fmt", "yuv420p",
+        RAW_VIDEO,
+    ]
+  else:
+    # Fallback solid dark theme agar image download na ho
+    bg_cmd = [
+        "ffmpeg",
+        "-y",
+        "-f", "lavfi",
+        "-i", (
+            "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
+            "drawtext=text='ROCHAK TATHYA':fontcolor=yellow:fontsize=64:x=(w-text_w)/2:y=280,"
+            f"drawtext=text='{safe_text}':fontcolor=white:fontsize=46:line_spacing=25:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=black@0.85:boxborderw=45:shadowx=2:shadowy=2"
+        ),
+        "-c:v", "libx264",
+        "-pix_fmt", "yuv420p",
+        RAW_VIDEO,
+    ]
+
   subprocess.run(bg_cmd, check=True)
-  print("✅ Themed background & text generated successfully.")
+  print("✅ Video background & text generated successfully.")
 
   # Step 1.5: gTTS se clear voice generate karna
   normal_voice_text = fact_text.replace("\n", " ")
@@ -157,21 +161,14 @@ def download_and_process_video():
   ffmpeg_command = [
       "ffmpeg",
       "-y",
-      "-i",
-      RAW_VIDEO,
-      "-i",
-      AUDIO_PATH,
-      "-c:v",
-      "libx264",
-      "-c:a",
-      "aac",
-      "-map",
-      "0:v:0",
-      "-map",
-      "1:a:0",
+      "-i", RAW_VIDEO,
+      "-i", AUDIO_PATH,
+      "-c:v", "libx264",
+      "-c:a", "aac",
+      "-map", "0:v:0",
+      "-map", "1:a:0",
       "-shortest",
-      "-t",
-      "30",
+      "-t", "30",
       VIDEO_PATH,
   ]
   subprocess.run(ffmpeg_command, check=True)
