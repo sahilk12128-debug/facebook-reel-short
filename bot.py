@@ -1,182 +1,34 @@
+import json
 import os
 import random
 import subprocess
 import requests
 from gtts import gTTS
 
-# आपकी Facebook Page आईडी और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 RAW_VIDEO = "raw.mp4"
 AUDIO_PATH = "voiceover.mp3"
 BG_IMAGE_PATH = "bg_image.jpg"
+POOL_FILE = "master_pool.json"
 HISTORY_FILE = "used_stories.txt"
 
 
 def get_non_repeating_content():
-  """1000+ ka massive pool aur History check system jo kabhi repeat nahi hone dega"""
-  print(
-      "Step 1: Loading massive 1000+ content pool & checking history to prevent"
-      " repeats..."
-  )
+  print("Step 1: Loading unique content pool & checking history...")
 
-  # 1000+ Unique & Mixed Master Pool (Funny, Facts, Science, Space, History)
-  master_pool = [
-      # --- Category: Funny & Comedy ---
-      {
-          "text": (
-              "Beta, 20 rupaye do,\nswarg mil jayega!\n\nAre Dada ji,\n20 rupaye"
-              " mein toh ice cream aati hai!"
-          ),
-          "caption": (
-              "Bachhe ki yeh baat sunkar hasi nahi ro paoge! 🤭 Cute baby"
-              " moments ke liye follow karein! 👇\n\n#CuteBaby #Funny"
-              " #BabySmile #TrendingReels #Comedy"
-          ),
-          "query": (
-              "cute 3d animated baby talking to an old grandfather on a bench"
-              " in a park, Pixar style"
-          ),
-      },
-      {
-          "text": (
-              "Mummi ne bola ki:\nJaldi so jao warna\nBhoot aa jayega!\n\nMaine bola:"
-              " Bulwao use, akela bore ho raha hu!"
-          ),
-          "caption": (
-              "Aajkal ke bachhe kisi se nahi darte! 👻 Tag your fearless friends!"
-              " 👇\n\n#FunnyBaby #CuteBaby #ViralReels #Trending #BabyComedy"
-          ),
-          "query": (
-              "cute funny 3d animated baby smiling mischievously in a cozy"
-              " bedroom, Pixar style"
-          ),
-      },
-      {
-          "text": (
-              "Jab papa poochte hain:\nMobile kisne toda?\n\nAur main apni ankhon"
-              " se\nmera bhai dikha deta hu!"
-          ),
-          "caption": (
-              "Mastermind baby! 🧠 Kis-kis ne bachpan mein yeh kiya hai?"
-              " Comments mein batao! 👇\n\n#SmartBaby #CuteBaby #ComedyReels"
-              " #Trending #Viral"
-          ),
-          "query": (
-              "cute smart 3d animated baby pointing finger innocently, Pixar"
-              " animation style"
-          ),
-      },
-      {
-          "text": (
-              "Teacher: Class mein shanti kyu hai?\n\nStudent: Kyunki sir,\nsabhi"
-              " bachhe padhne ka natak kar rahe hain!"
-          ),
-          "caption": (
-              "School ke din yaad aa gaye? 😂 Tag your school bestie! 👇\n\n"
-              "#SchoolLife #Funny #Comedy #TrendingReels #Viral"
-          ),
-          "query": (
-              "cute smart 3d animated baby sitting in a colorful classroom, Pixar"
-              " style"
-          ),
-      },
-      {
-          "text": (
-              "Jab guest ghar aate hain aur mummi kehti hain:\n'Beta, uncle ko woh"
-              " poem sunao jo school mein yaad ki thi!'"
-          ),
-          "caption": (
-              "Yeh situation har bachhe ke sath hoti hai! 😅 Agree karte ho?"
-              " 👇\n\n#Relatable #FunnyBaby #CuteMoments #Reels #Trending"
-          ),
-          "query": (
-              "cute shy 3d animated baby hiding behind mother in a living room,"
-              " Pixar style"
-          ),
-      },
-      # --- Category: Amazing Science & Nature Facts ---
-      {
-          "text": (
-              "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
-              " maujood hain!"
-          ),
-          "caption": (
-              "Kya aapko yeh baat pata thi? 🌳 Nature hamari soch se kahin zyada"
-              " khubsurat hai! Apne dost ko tag karo! 👇\n\n#NatureLovers #Facts"
-              " #ViralReels #Trending #DidYouKnow"
-          ),
-          "query": "anime forest landscape scenery aesthetic, beautiful nature",
-      },
-      {
-          "text": (
-              "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
-              " hai!"
-          ),
-          "caption": (
-              "Aapke dimaag mein abhi kya chal raha hai? 🤯 Itne vicharon mein se"
-              " aap kis baare mein sochte ho? Comments mein batao! 👇\n\n"
-              "#HumanBrain #PsychologyFacts #Viral #MindBlown #Knowledge"
-          ),
-          "query": "anime starry night sky aesthetic lofi, galaxy stars",
-      },
-      {
-          "text": (
-              "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
-              " bottle ki hoti hai!"
-          ),
-          "caption": (
-              "Yeh sach jaan kar aap bhi chaunk gaye na? 💧 Kitne logo ko yeh"
-              " galatfahmi thi? Video ko share karo! 👇\n\n#Water"
-              " #FactsThatBlowYourMind #ViralVideo #Trending"
-          ),
-          "query": "anime rain city aesthetic night, neon lights reflection",
-      },
-      {
-          "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
-          "caption": (
-              "Kudrat ke raaz hairan karne wale hain! 🦋 Aise hi aur rochak tathya"
-              " roz dekhne ke liye follow karein! 👇\n\n#Insects #NatureFacts"
-              " #Viral #Trending #FactsDaily"
-          ),
-          "query": "anime flower field butterfly sunny day aesthetic",
-      },
-      {
-          "text": (
-              "Octopus ke paas ek nahi,\nbalki teen dil aur\nnav brain (dimag)"
-              " hote hain!"
-          ),
-          "caption": (
-              "Kudrat ka sabse alag jeev! 🐙 Kya aapko yeh hairan karne wala"
-              " fact pata tha? 👇\n\n#SeaCreatures #ScienceFacts #Viral #Knowledge"
-          ),
-          "query": "deep sea bioluminescence anime aesthetic underwater ocean",
-      },
-      {
-          "text": (
-              "Suraj ki roshni ko dharti tak\npahunchne mein\nlagbhag 8 minute aur"
-              " 20 sekund lagte hain!"
-          ),
-          "caption": (
-              "Space ke raaz kitne dilchasp hain! ☀️ Aise hi amazing facts ke"
-              " liye follow karein! 👇\n\n#SpaceFacts #Sun #Universe #Trending"
-          ),
-          "query": "anime space galaxy universe aesthetic stars glowing",
-      },
-      {
-          "text": (
-              "Honey (Shahad) ekmatra aisa khadya padarth hai\njo hazaron saalon"
-              " tak kabhi kharab nahi hota!"
-          ),
-          "caption": (
-              "Nature ka magic! 🍯 Aise hi aur mazedaar facts ke liye follow"
-              " karein! 👇\n\n#Honey #AmazingFacts #HealthFacts #ViralReels"
-          ),
-          "query": "anime golden hour sunset wheat field aesthetic",
-      },
-      # (Yahan aap aur bhi hazaron items jod sakte hain, yeh system automatic filter karega)
-  ]
+  if os.path.exists(POOL_FILE):
+    with open(POOL_FILE, "r", encoding="utf-8") as f:
+      master_pool = json.load(f)
+  else:
+    master_pool = [{
+        "text": (
+            "Insan ka dil ek din mein\nlagbhag 1 lakh baar dhadakta hai!"
+        ),
+        "caption": "Amazing body facts! 👇 #Facts",
+        "query": "science aesthetic background",
+    }]
 
   # Load history of used texts
   used_texts = set()
@@ -189,9 +41,9 @@ def get_non_repeating_content():
       item for item in master_pool if item["text"] not in used_texts
   ]
 
-  # Agar saari stories use ho chuki hain, toh history reset kar do taaki loop chalta rahe
+  # Agar saari items use ho chuki hain, toh history reset kar do
   if not available_pool:
-    print("🔄 All items used once. Resetting history for fresh rotation...")
+    print("🔄 All items used. Resetting history for fresh rotation...")
     if os.path.exists(HISTORY_FILE):
       os.remove(HISTORY_FILE)
     available_pool = master_pool
@@ -206,7 +58,6 @@ def get_non_repeating_content():
 
 
 def download_background_image(query):
-  """Topic ke hisab se cinematic background image download karega"""
   print(f"Step 1.1: Generating background image for query: {query}")
   image_url = f"https://image.pollinations.ai/prompt/{query.replace(' ', '%20')}?width=1080&height=1920&nologo=true"
 
@@ -224,7 +75,6 @@ def download_background_image(query):
 
 
 def generate_hindi_voice(text):
-  """gTTS se clear aur fast Hindi voice generate karega"""
   print("Step 1.5: Generating Hindi Voiceover using gTTS...")
   clean_text = text.replace("\n", " ").replace("–", "")
 
@@ -246,10 +96,7 @@ def download_and_process_video():
   has_image = download_background_image(query)
   generate_hindi_voice(story_text)
 
-  print(
-      "Step 1.2: Compiling video with clean text (No background box, shadow"
-      " enabled)..."
-  )
+  print("Step 1.2: Compiling video with clean text (Shadow enabled)...")
   safe_text = (
       story_text.replace("'", "")
       .replace('"', "")
