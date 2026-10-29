@@ -2,7 +2,6 @@ import os
 import random
 import subprocess
 import requests
-from gtts import gTTS
 
 # आपकी Facebook Page आईडी और GitHub Secrets से Access Token
 FACEBOOK_PAGE_ID = "1322066784333919"
@@ -13,20 +12,21 @@ AUDIO_PATH = "voiceover.mp3"
 BG_IMAGE_PATH = "bg_image.jpg"
 
 
-def get_funny_cute_baby_story():
-  """Har baar ek naya cute baby dialogue aur uske hisab se 3D animation image prompt chunega"""
-  print("Step 1: Selecting a fresh cute baby story & prompt...")
+def get_random_unique_content():
+  """Har baar ek bilkul nayi aur alag funny ya fact video chunega taaki repeat na ho"""
+  print("Step 1: Selecting fresh unique content (Funny & Facts mix)...")
 
-  baby_stories_pool = [
+  master_pool = [
+      # --- Category 1: Funny Baby Stories ---
       {
           "text": (
               "Beta, 20 rupaye do,\nswarg mil jayega! 🤲\n\n- Are Dada ji,\n20 rupaye"
               " mein toh ice cream aati hai!"
           ),
           "caption": (
-              "Bachhe ki yeh baat sunkar aapki bhi hasi nikal jayegi! 🤭 Cute"
-              " baby moments ke liye follow karein! 👇\n\n#CuteBaby #Funny"
-              " #Shorts #BabySmile #TrendingReels"
+              "Bachhe ki yeh baat sunkar hasi nahi ro paoge! 🤭 Cute baby"
+              " moments ke liye follow karein! 👇\n\n#CuteBaby #Funny"
+              " #BabySmile #TrendingReels #Comedy"
           ),
           "query": (
               "cute 3d animated baby talking to an old grandfather on a bench"
@@ -62,30 +62,61 @@ def get_funny_cute_baby_story():
               " animation style"
           ),
       },
+      # --- Category 2: Amazing Facts & Knowledge ---
       {
           "text": (
-              "Paisa ho ya na ho,\nchehre par muskan honi chahiye!\n\nAur agar jeb mein"
-              " chocolate ho,\ntoh fir kya hi chahiye!"
+              "Duniya mein jitne log hain,\nusse kahin zyada ped dharti par"
+              " maujood hain!"
           ),
           "caption": (
-              "Pyar aur muskan hamesha bani rahe! ❤️ Video pasand aaye toh share"
-              " zaroor karein! 👇\n\n#CuteBaby #BabySmile #Happiness #Trending"
-              " #Reels"
+              "Kya aapko yeh baat pata thi? 🌳 Nature hamari soch se kahin zyada"
+              " khubsurat hai! Apne dost ko tag karo! 👇\n\n#NatureLovers #Facts"
+              " #ViralReels #Trending #DidYouKnow"
           ),
-          "query": (
-              "cute happy 3d animated baby holding a chocolate and smiling"
-              " joyfully, Pixar style"
+          "query": "anime forest landscape scenery aesthetic, beautiful nature",
+      },
+      {
+          "text": (
+              "Insani dimaag ek din mein\nlagbhag 60,000 alag-alag vichaar\nsochta"
+              " hai!"
           ),
+          "caption": (
+              "Aapke dimaag mein abhi kya chal raha hai? 🤯 Itne vicharon mein se"
+              " aap kis baare mein sochte ho? Comments mein batao! 👇\n\n"
+              "#HumanBrain #PsychologyFacts #Viral #MindBlown #Knowledge"
+          ),
+          "query": "anime starry night sky aesthetic lofi, galaxy stars",
+      },
+      {
+          "text": (
+              "Pani ki bottle par jo expiry date\nhoti hai woh pani ki nahi,\nbalki"
+              " bottle ki hoti hai!"
+          ),
+          "caption": (
+              "Yeh sach jaan kar aap bhi chaunk gaye na? 💧 Kitne logo ko yeh"
+              " galatfahmi thi? Video ko share karo! 👇\n\n#Water"
+              " #FactsThatBlowYourMind #ViralVideo #Trending"
+          ),
+          "query": "anime rain city aesthetic night, neon lights reflection",
+      },
+      {
+          "text": "Titali apne pairon se kisi bhi\ncheez ka swaad chakhti hai!",
+          "caption": (
+              "Kudrat ke raaz hairan karne wale hain! 🦋 Aise hi aur rochak tathya"
+              " roz dekhne ke liye follow karein! 👇\n\n#Insects #NatureFacts"
+              " #Viral #Trending #FactsDaily"
+          ),
+          "query": "anime flower field butterfly sunny day aesthetic",
       },
   ]
 
-  chosen = random.choice(baby_stories_pool)
+  chosen = random.choice(master_pool)
   return chosen["text"], chosen["caption"], chosen["query"]
 
 
-def download_baby_animation_image(query):
-  """Cute 3D animated baby ki image download karega"""
-  print(f"Step 1.1: Generating 3D baby animation image for query: {query}")
+def download_background_image(query):
+  """Topic ke hisab se cinematic background image download karega"""
+  print(f"Step 1.1: Generating background image for query: {query}")
   image_url = f"https://image.pollinations.ai/prompt/{query.replace(' ', '%20')}?width=1080&height=1920&nologo=true"
 
   try:
@@ -93,7 +124,7 @@ def download_baby_animation_image(query):
     if response.status_code == 200:
       with open(BG_IMAGE_PATH, "wb") as f:
         f.write(response.content)
-      print("✅ Cute baby animation image downloaded successfully.")
+      print("✅ Background image downloaded successfully.")
       return True
   except Exception as e:
     print(f"⚠️ Error downloading image: {e}")
@@ -101,15 +132,38 @@ def download_baby_animation_image(query):
   return False
 
 
-def download_and_process_video():
-  story_text, viral_caption, query = get_funny_cute_baby_story()
-  print(f"Selected Baby Story: {story_text}")
+def generate_hindi_male_voice(text):
+  """Hindi mein voice generate karega"""
+  print("Step 1.5: Generating Hindi Voiceover...")
+  clean_text = text.replace("\n", " ").replace("–", "")
 
-  has_image = download_baby_animation_image(query)
+  tts_url = "https://translate.google.com/translate_tts"
+  params = {"ie": "UTF-8", "q": clean_text, "tl": "hi", "client": "tw-ob"}
+
+  try:
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = requests.get(tts_url, params=params, headers=headers, timeout=15)
+    if response.status_code == 200:
+      with open(AUDIO_PATH, "wb") as f:
+        f.write(response.content)
+      print("✅ Hindi Voice generated successfully.")
+      return True
+  except Exception as e:
+    print(f"⚠️ Error generating voice: {e}")
+
+  return False
+
+
+def download_and_process_video():
+  story_text, viral_caption, query = get_random_unique_content()
+  print(f"Selected Content: {story_text}")
+
+  has_image = download_background_image(query)
+  generate_hindi_male_voice(story_text)
 
   print(
-      "Step 1.2: Compiling video with baby animation & text (No background"
-      " box)..."
+      "Step 1.2: Compiling video with clean text (No background box, shadow"
+      " enabled)..."
   )
   safe_text = (
       story_text.replace("'", "")
@@ -129,7 +183,7 @@ def download_and_process_video():
         "-vf",
         (
             "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
+            "drawtext=text='VIRAL FACTS & STORIES':fontcolor=yellow:fontsize=52:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
             f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:shadowx=2:shadowy=2"
         ),
         "-c:v",
@@ -149,7 +203,7 @@ def download_and_process_video():
         "-i",
         (
             "color=c=0x0B0F19:s=1080x1920:rate=25:duration=30,"
-            "drawtext=text='BABY SMILE STUDIO':fontcolor=yellow:fontsize=56:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
+            "drawtext=text='VIRAL FACTS & STORIES':fontcolor=yellow:fontsize=52:x=(w-text_w)/2:y=250:shadowx=2:shadowy=2,"
             f"drawtext=text='{safe_text}':fontcolor=white:fontsize=44:line_spacing=28:x=(w-text_w)/2:y=(h-text_h)/2:shadowx=2:shadowy=2"
         ),
         "-c:v",
@@ -160,14 +214,7 @@ def download_and_process_video():
     ]
 
   subprocess.run(bg_cmd, check=True)
-  print("✅ Video generated successfully without background box.")
-
-  # Step 1.5: Hindi Voiceover generation
-  normal_voice_text = story_text.replace("\n", " ").replace("–", "")
-  print("Step 1.5: Generating Hindi Voiceover...")
-  tts = gTTS(text=normal_voice_text, lang="hi", slow=False)
-  tts.save(AUDIO_PATH)
-  print("✅ Voice generated successfully.")
+  print("✅ Video generated successfully.")
 
   print("Step 2: Mixing audio and compiling final video...")
   ffmpeg_command = [
