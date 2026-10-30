@@ -8,7 +8,7 @@ FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 VIDEO_PATH = "reel.mp4"
 MOVIE_FILE = "movie.mp4"
 
-# Aapki Google Drive ki direct download link
+# Google Drive ki direct download link
 GOOGLE_DRIVE_DOWNLOAD_URL = (
     "https://drive.google.com/uc?export=download&id=1pHg_AkvY40iy_B9S4YD8teF1HzD1GhSf"
 )
@@ -16,7 +16,7 @@ GOOGLE_DRIVE_DOWNLOAD_URL = (
 
 def download_movie_from_drive():
   print("Step 1: Downloading movie from your Google Drive...")
-  if os.path.exists(MOVIE_FILE):
+  if os.path.exists(MOVIE_FILE) and os.path.getsize(MOVIE_FILE) > 1024 * 1024:
     print("✅ Movie already exists locally.")
     return True
 
@@ -33,8 +33,8 @@ def download_movie_from_drive():
       return True
     else:
       print(
-          "❌ Failed to download. Make sure the file sharing is set to 'Anyone"
-          f" with the link'. Status code: {response.status_code}"
+          "❌ Failed to download. Status code: "
+          f"{response.status_code}"
       )
       return False
   except Exception as e:
@@ -49,8 +49,11 @@ def cut_safe_movie_clip():
     print("❌ Error: movie.mp4 not found!")
     return None
 
+  # Default fallback start time agar ffprobe fail ho jaye
+  start_time = 300  # 5th minute se
+  clip_duration = 30
+
   try:
-    # FFmpeg se movie ki total duration pata karna
     result = subprocess.run(
         [
             "ffprobe",
@@ -68,23 +71,14 @@ def cut_safe_movie_clip():
         check=True,
     )
     total_duration = float(result.stdout.strip())
+    if total_duration > 120:
+      start_time = random.randint(60, int(total_duration) - 60)
   except Exception as e:
-    print(f"⚠️ Error reading movie duration: {e}")
-    total_duration = 1800  # Default 30 mins maan lo
-
-  clip_duration = 30  # 30 seconds reel
-
-  # Safe random start time (shuru aur ant chhod kar)
-  if total_duration > 120:
-    start_time = random.randint(60, int(total_duration) - 60)
-  else:
-    start_time = 0
+    print(f"⚠️ Warning: Could not detect exact duration ({e}), using default start time.")
 
   print(f"🎬 Cutting clip starting at timestamp: {start_time} seconds")
 
-  # Copyright Safe FFmpeg Command:
-  # - Video ko 9:16 vertical crop/scale kiya
-  # - Audio ki pitch/speed thodi badal di taaki Facebook ka copyright filter na pakad paye
+  # Copyright Safe FFmpeg Command
   cut_cmd = [
       "ffmpeg",
       "-y",
@@ -100,7 +94,7 @@ def cut_safe_movie_clip():
           "drawtext=text='BEST MOVIE SCENES':fontcolor=yellow:fontsize=50:x=(w-text_w)/2:y=150:shadowx=2:shadowy=2"
       ),
       "-af",
-      "atempo=1.05",  # Audio speed halki si badalna taaki copyright match na ho
+      "atempo=1.05",
       "-c:v",
       "libx264",
       "-c:a",
