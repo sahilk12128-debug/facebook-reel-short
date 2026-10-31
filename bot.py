@@ -17,12 +17,12 @@ FACT_CAPTIONS = [
 ]
 
 def prepare_reel_video():
-    print("Step 1: Video ko Facebook Reels format (1080x1920) mein fix kiya ja raha hai...")
+    print("Step 1: Video ko Facebook Reels format (1080x1920) mein convert kiya ja raha hai...")
     if not os.path.exists(INPUT_VIDEO):
         print(f"❌ Error: {INPUT_VIDEO} nahi mili!")
         return False
         
-    # FFmpeg command jo video ko Facebook Reels ke liye perfectly format karegi
+    # FFmpeg command jo video ko Facebook ke liye 100% compatible banayegi
     ffmpeg_cmd = [
         "ffmpeg", "-y", "-i", INPUT_VIDEO,
         "-vf", "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920",
