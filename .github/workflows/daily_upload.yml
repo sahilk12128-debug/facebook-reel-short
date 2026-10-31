@@ -29,7 +29,7 @@ jobs:
 
       - name: Install Python Tools
         run: |
-          pip install requests yt-dlp gTTS
+          pip install requests yt-dlp gTTS pillow
 
       - name: Run Auto Reels Bot
         run: python bot.py
