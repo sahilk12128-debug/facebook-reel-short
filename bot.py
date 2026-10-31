@@ -2,35 +2,39 @@ import os
 import random
 import requests
 
+# Aapke Facebook Page ki ID
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
-# Behtareen motivational lines ki list
-MOTIVATIONAL_LINES = [
-    "🔥 Safalta ek din mein nahi milti, lekin agar roz mehnat karo toh ek din zaroor milti hai! 💪 #Motivation #Success #Mindset",
-    "⭐ Apne sapno ko sach karne ke liye, pehle unhe dekhna zaroori hai. 🚀 #Inspiration #Goals #Hustle",
-    "🎯 Mushkilein dil ke iraade azmati hain, sapno ke parde hataati hain. Haar mat maano! ✨ #NeverGiveUp #MotivationDaily",
-    "💡 Khud par vishwas rakho, adhi jeet toh wahin ho jati hai! 🦅 #SelfBelief #SuccessMindset #Positivity",
-    "🚀 Raaste chahe kitne bhi kathin kyun na hon, agar manzil paane ki zid hai toh rasta mil hi jayega. 🔥 #KeepGoing #Quotes"
-]
-
-def post_motivation():
-    print("Step 1: Motivational post process shuru ho raha hai...")
+def post_motivational_quote():
+    print("Step 1: Internet se fresh motivational quote fetch ki ja rahi hai...")
     
     if not FB_ACCESS_TOKEN:
         print("❌ Error: FB_ACCESS_TOKEN missing hai! GitHub Secrets check karein.")
         return
 
-    # Random motivational line select karna
-    selected_quote = random.choice(MOTIVATIONAL_LINES)
-    print(f"📝 Selected Quote: {selected_quote}")
+    # Free public API se random quote nikalna
+    quote_text = "Safalta mehnat karne walon par fida hoti hai!"
+    author = "Success"
+    
+    try:
+        response = requests.get("https://api.quotable.io/random", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            quote_text = data.get("content", quote_text)
+            author = data.get("author", "Unknown")
+    except Exception as e:
+        print(f"⚠️ API warning: {e}")
+
+    # Unique message with random ID taaki Facebook duplicate na bataye
+    final_message = f"💡 {quote_text}\n\n— {author}\n\n#Motivation #Success #FilmClub #DailyQuotes #{random.randint(1000, 9999)}"
+    print(f"📝 Generated Post: {final_message}")
 
     try:
         print("Step 2: Facebook Page feed par post publish ki ja rahi hai...")
-        # Yahan humne /feed endpoint use kiya hai jo text/status post ke liye hota hai
         url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/feed"
         payload = {
-            "message": selected_quote,
+            "message": final_message,
             "access_token": FB_ACCESS_TOKEN
         }
         
@@ -38,7 +42,7 @@ def post_motivation():
         print(f"Facebook Response: {response}")
         
         if "id" in response:
-            print("🎉 Success! Motivational post successfully Facebook page par live ho gayi hai.")
+            print("🎉 Success! Post successfully Facebook page par live ho gayi hai.")
         else:
             print(f"⚠️ Response warning: {response}")
             
@@ -46,4 +50,4 @@ def post_motivation():
         print(f"❌ Error during posting: {str(e)}")
 
 if __name__ == "__main__":
-    post_motivation()
+    post_motivational_quote()
