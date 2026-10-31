@@ -8,38 +8,37 @@ from PIL import Image, ImageDraw, ImageFont
 FACEBOOK_PAGE_ID = os.environ.get("FB_PAGE_ID", "1322066784333919")
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
-# Shuddh Hindi (Devanagari) ke dynamic parts (0% repetition)
+# Hinglish ke dynamic parts (0% repetition aur bina kisi font error ke)
 PART_1 = [
-    "महाभारत के पावन ज्ञान के अनुसार",
-    "श्री भगवद्गीता का महान संदेश है कि",
-    "रामायण की मर्यादा और पवित्र नीति कहती है कि",
-    "सनातन साहित्य और ज्ञान के अनुसार",
-    "प्राचीन ग्रंथों का अनमोल विचार है कि"
+    "Mahabharat ke paavan gyan anusar",
+    "Shri Bhagavad Geeta ka mahan sandesh hai ki",
+    "Ramayan ki maryada aur pavitra niti kehti hai ki",
+    "Sanatan sahitya aur gyan ke anusar",
+    "Prachin grantho ka anmol vichar hai ki"
 ]
 
 PART_2 = [
-    "अपना कर्म बिना किसी फल की चिंता के पूरी निष्ठा से करना चाहिए।",
-    "क्रोध और अहंकार का त्याग कर हमेशा सत्य के मार्ग पर चलना चाहिए।",
-    "दूसरों की भलाई और सेवा को ही अपना सबसे बड़ा धर्म मानना चाहिए।",
-    "अपनी सच्ची मेहनत और आत्मविश्वास से हर कठिनाई का सामना करना चाहिए।",
-    "अपने मन और इंद्रियों पर संयम रखकर जीवन को सफल बनाना चाहिए।"
+    "apna karm bina kisi fal ki chinta ke poori nishtha se karna chahiye.",
+    "krodh aur ahankaar ko tyag kar hamesha satya ke marg par chalna chahiye.",
+    "dusron ki bhalai aur seva ko hi apna sabse bada dharm manna chahiye.",
+    "apni sachchi mehnat aur aatm-vishwas se har kathinai ka samna karna chahiye.",
+    "apne man aur indriyon par sanyam rakhkar jeevan ko safal banana chahiye."
 ]
 
 AUTHOR_LIST = [
-    "— श्री कृष्ण (महाभारत)",
-    "— रामायण सार",
-    "— सनातन साहित्य",
-    "— गीता ज्ञान",
-    "— नीति वचन"
+    "— Shri Krishna (Mahabharat)",
+    "— Ramayan Saar",
+    "— Sanatan Sahitya",
+    "— Geeta Gyan",
+    "— Niti Vachan"
 ]
 
-def generate_dynamic_hindi_quote():
-    # Har baar alag tukde judkar ekdam nayi line banayenge
+def generate_hinglish_quote():
     text = f"{random.choice(PART_1)}\n{random.choice(PART_2)}\n\n{random.choice(AUTHOR_LIST)}"
     return text
 
 def create_designer_frame():
-    print("Step 1: Shuddh Hindi designer frame image banayi ja rahi hai...")
+    print("Step 1: Designer frame image banayi ja rahi hai...")
     
     width, height = 1080, 1080
     
@@ -47,50 +46,47 @@ def create_designer_frame():
     img = Image.new("RGB", (width, height), color="#FBF9F5")
     draw = ImageDraw.Draw(img)
     
-    # Professional double border (Margins set ki hain taaki text andar rahe)
+    # Professional double border (Margins perfect hain taaki text bahar na nikle)
     draw.rectangle([90, 90, width - 90, height - 90], outline="#1A1A1A", width=8)
     draw.rectangle([105, 105, width - 105, height - 105], outline="#9C7C38", width=3)
     
-    # Dynamic Shuddh Hindi text
-    raw_text = generate_dynamic_hindi_quote()
+    # Dynamic Hinglish text
+    raw_text = generate_hinglish_quote()
     
-    # Text wrapping: Width 26 rakhi hai taaki lamba text frame ke andar hi wrap ho jaye
+    # Text wrapping: Width 32 rakhi hai taaki text border ke andar hi wrap ho jaye
     wrapped_lines = []
     for paragraph in raw_text.split('\n'):
         if paragraph.strip() == "":
             wrapped_lines.append("")
         else:
-            wrapped_lines.extend(textwrap.wrap(paragraph, width=26))
+            wrapped_lines.extend(textwrap.wrap(paragraph, width=32))
     
     formatted_text = "\n".join(wrapped_lines)
     
-    # Font load karna (Ubuntu server ka Noto Sans Devanagari font taaki dabbe na aaye)
+    # Font load karna (Default Linux font jo bina error ke chalega)
     try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/noto/NotoSansDevanagari-Bold.ttf", 32)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 34)
     except Exception:
-        try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
-        except Exception:
-            font = ImageFont.load_default()
+        font = ImageFont.load_default()
 
     # Text ko frame ke bilkul center mein align karna
-    bbox = draw.multiline_textbbox((0, 0), formatted_text, font=font, spacing=18)
+    bbox = draw.multiline_textbbox((0, 0), formatted_text, font=font, spacing=20)
     text_w = bbox[2] - bbox[0]
     text_h = bbox[3] - bbox[1]
     
     x = (width - text_w) / 2
     y = (height - text_h) / 2
     
-    draw.multiline_text((x, y), formatted_text, fill="#2C2C2C", font=font, align="center", spacing=18)
+    draw.multiline_text((x, y), formatted_text, fill="#2C2C2C", font=font, align="center", spacing=20)
     
     image_path = "hindi_designer_frame.jpg"
     img.save(image_path)
-    print(f"✅ Shuddh Hindi frame image ready ho gayi: {image_path}")
+    print(f"✅ Clean Hinglish frame image ready ho gayi: {image_path}")
     return image_path, raw_text
 
 def post_frame_to_facebook():
     if not FB_ACCESS_TOKEN:
-        print("❌ Error: FB_ACCESS_TOKEN missing hai! Secrets check karein.")
+        print("❌ Error: FB_ACCESS_TOKEN missing hai!")
         return
 
     image_path, caption_text = create_designer_frame()
@@ -110,7 +106,7 @@ def post_frame_to_facebook():
             print(f"Facebook Response: {response}")
             
             if "id" in response:
-                print("🎉 Success! Shuddh Hindi post frame ke sath live ho gayi hai.")
+                print("🎉 Success! Hinglish post frame ke sath live ho gayi hai.")
             else:
                 print(f"⚠️ Response warning: {response}")
                 
