@@ -5,7 +5,7 @@ import requests
 FACEBOOK_PAGE_ID = "1322066784333919"
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
-# Alag-alag aur behtareen motivational lines ki list (aap isme aur bhi add kar sakte hain)
+# Behtareen motivational lines ki list
 MOTIVATIONAL_LINES = [
     "🔥 Safalta ek din mein nahi milti, lekin agar roz mehnat karo toh ek din zaroor milti hai! 💪 #Motivation #Success #Mindset",
     "⭐ Apne sapno ko sach karne ke liye, pehle unhe dekhna zaroori hai. 🚀 #Inspiration #Goals #Hustle",
@@ -14,19 +14,20 @@ MOTIVATIONAL_LINES = [
     "🚀 Raaste chahe kitne bhi kathin kyun na hon, agar manzil paane ki zid hai toh rasta mil hi jayega. 🔥 #KeepGoing #Quotes"
 ]
 
-def post_motivational_text():
+def post_motivation():
     print("Step 1: Motivational post process shuru ho raha hai...")
     
     if not FB_ACCESS_TOKEN:
         print("❌ Error: FB_ACCESS_TOKEN missing hai! GitHub Secrets check karein.")
         return
 
-    # Har baar ek bilkul nayi random line select hogi
+    # Random motivational line select karna
     selected_quote = random.choice(MOTIVATIONAL_LINES)
     print(f"📝 Selected Quote: {selected_quote}")
 
     try:
-        print("Step 2: Facebook page par post publish ki ja rahi hai...")
+        print("Step 2: Facebook Page feed par post publish ki ja rahi hai...")
+        # Yahan humne /feed endpoint use kiya hai jo text/status post ke liye hota hai
         url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/feed"
         payload = {
             "message": selected_quote,
@@ -37,7 +38,7 @@ def post_motivational_text():
         print(f"Facebook Response: {response}")
         
         if "id" in response:
-            print("🎉 Success! Motivational line successfully Facebook page par post ho gayi hai.")
+            print("🎉 Success! Motivational post successfully Facebook page par live ho gayi hai.")
         else:
             print(f"⚠️ Response warning: {response}")
             
@@ -45,4 +46,4 @@ def post_motivational_text():
         print(f"❌ Error during posting: {str(e)}")
 
 if __name__ == "__main__":
-    post_motivational_text()
+    post_motivation()
