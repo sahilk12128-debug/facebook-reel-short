@@ -4,8 +4,8 @@ import requests
 import textwrap
 from PIL import Image, ImageDraw, ImageFont
 
-# Aapke Facebook Page ki ID
-FACEBOOK_PAGE_ID = "1322066784333919"
+# Aapke Facebook Page ki ID aur Token
+FACEBOOK_PAGE_ID = os.environ.get("FB_PAGE_ID", "1322066784333919")
 FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
 # Shuddh Hindi (Devanagari) ke dynamic parts (0% repetition)
@@ -34,6 +34,7 @@ AUTHOR_LIST = [
 ]
 
 def generate_dynamic_hindi_quote():
+    # Har baar alag tukde judkar ekdam nayi line banayenge
     text = f"{random.choice(PART_1)}\n{random.choice(PART_2)}\n\n{random.choice(AUTHOR_LIST)}"
     return text
 
@@ -46,38 +47,41 @@ def create_designer_frame():
     img = Image.new("RGB", (width, height), color="#FBF9F5")
     draw = ImageDraw.Draw(img)
     
-    # Professional double border
+    # Professional double border (Margins set ki hain taaki text andar rahe)
     draw.rectangle([90, 90, width - 90, height - 90], outline="#1A1A1A", width=8)
     draw.rectangle([105, 105, width - 105, height - 105], outline="#9C7C38", width=3)
     
     # Dynamic Shuddh Hindi text
     raw_text = generate_dynamic_hindi_quote()
     
-    # Text wrapping: Width ko chota rakha hai taaki Hindi text frame ke andar hi rahe
+    # Text wrapping: Width 26 rakhi hai taaki lamba text frame ke andar hi wrap ho jaye
     wrapped_lines = []
     for paragraph in raw_text.split('\n'):
         if paragraph.strip() == "":
             wrapped_lines.append("")
         else:
-            wrapped_lines.extend(textwrap.wrap(paragraph, width=28))
+            wrapped_lines.extend(textwrap.wrap(paragraph, width=26))
     
     formatted_text = "\n".join(wrapped_lines)
     
-    # Font load karna (Linux system default font ya fallback)
+    # Font load karna (Ubuntu server ka Noto Sans Devanagari font taaki dabbe na aaye)
     try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 34)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/noto/NotoSansDevanagari-Bold.ttf", 32)
     except Exception:
-        font = ImageFont.load_default()
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
+        except Exception:
+            font = ImageFont.load_default()
 
     # Text ko frame ke bilkul center mein align karna
-    bbox = draw.multiline_textbbox((0, 0), formatted_text, font=font, spacing=20)
+    bbox = draw.multiline_textbbox((0, 0), formatted_text, font=font, spacing=18)
     text_w = bbox[2] - bbox[0]
     text_h = bbox[3] - bbox[1]
     
     x = (width - text_w) / 2
     y = (height - text_h) / 2
     
-    draw.multiline_text((x, y), formatted_text, fill="#2C2C2C", font=font, align="center", spacing=20)
+    draw.multiline_text((x, y), formatted_text, fill="#2C2C2C", font=font, align="center", spacing=18)
     
     image_path = "hindi_designer_frame.jpg"
     img.save(image_path)
@@ -86,7 +90,7 @@ def create_designer_frame():
 
 def post_frame_to_facebook():
     if not FB_ACCESS_TOKEN:
-        print("❌ Error: FB_ACCESS_TOKEN missing hai!")
+        print("❌ Error: FB_ACCESS_TOKEN missing hai! Secrets check karein.")
         return
 
     image_path, caption_text = create_designer_frame()
@@ -106,12 +110,12 @@ def post_frame_to_facebook():
             print(f"Facebook Response: {response}")
             
             if "id" in response:
-                print("🎉 Success! Shuddh Hindi post Facebook par live ho gayi hai.")
+                print("🎉 Success! Shuddh Hindi post frame ke sath live ho gayi hai.")
             else:
                 print(f"⚠️ Response warning: {response}")
                 
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
+        print(f"❌ Error during posting: {str(e)}")
 
 if __name__ == "__main__":
     post_frame_to_facebook()
