@@ -7,7 +7,7 @@ FB_ACCESS_TOKEN = os.environ.get("FB_ACCESS_TOKEN")
 
 VIDEO_PATH = "movie.mp4"
 
-# Daily funny facts aur knowledge captions ki list
+# Mazedaar aur engaging captions
 FACT_CAPTIONS = [
     "🧠 Kya aapko pata hai? Yeh fact aapko hairan kar dega! 🤯 #Facts #Knowledge #DailyFacts #Trending",
     "😂 Jab logic chat par jaye aur funny moments shuru ho jayein! 🍿 #FunnyReels #Comedy #Laughs",
@@ -51,7 +51,8 @@ def upload_daily_video():
             "offset": "0",
             "file_size": str(len(video_bytes))
         }
-        requests.post(upload_url, headers=headers, data=video_bytes)
+        upload_response = requests.post(upload_url, headers=headers, data=video_bytes)
+        print(f"Upload Response Status: {upload_response.status_code}")
         
         print("Step 4: Reel publish ki ja rahi hai...")
         publish_url = f"https://graph.facebook.com/v18.0/{FACEBOOK_PAGE_ID}/video_reels"
@@ -66,9 +67,9 @@ def upload_daily_video():
         print(f"Publish Response: {publish_response}")
         
         if publish_response.get("success"):
-            print("🎉 Success! Daily Fact/Funny Reel successfully publish ho gayi hai.")
+            print("🎉 Success! Reel successfully Facebook par bhej di gayi hai.")
         else:
-            print(f"⚠️ Response: {publish_response}")
+            print(f"⚠️ Response warning: {publish_response}")
             
     except Exception as e:
         print(f"❌ Error during upload: {str(e)}")
